@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="src/ShadowPet.Desktop/App.axaml" value="src/ShadowPet.Desktop/ShadowPet.Desktop.csproj" />
+        <entry key="src/ShadowPet.Desktop/Views/DialogueBubble.axaml" value="src/ShadowPet.Desktop/ShadowPet.Desktop.csproj" />
         <entry key="src/ShadowPet.Desktop/Views/MainWindow.axaml" value="src/ShadowPet.Desktop/ShadowPet.Desktop.csproj" />
       </map>
     </option>

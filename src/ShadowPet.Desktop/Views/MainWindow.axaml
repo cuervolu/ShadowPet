@@ -10,8 +10,8 @@
         CanResize="False"
         ShowInTaskbar="False"
         Topmost="True"
-        Width="128"
-        Height="128"
+        Width="200"
+        Height="200"
         Icon="/Assets/icon.ico"
         Title="Shadow Pet">
 

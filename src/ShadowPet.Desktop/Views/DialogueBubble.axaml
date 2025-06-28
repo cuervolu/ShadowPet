@@ -1,20 +1,14 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:ShadowPet.Desktop.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="50"
              x:Class="ShadowPet.Desktop.Views.DialogueBubble"
-             x:DataType="vm:MainWindowViewModel">
-
-    <Border Background="#212529"
-            BorderBrush="White"
-            BorderThickness="2"
-            CornerRadius="10"
-            Padding="12,8">
-
-        <TextBlock Text="{Binding DialogueText}"
-                   Foreground="White"
+             x:Name="This">
+    <Border Background="#2E2E3A" CornerRadius="8" Padding="12" BorderThickness="1.5" BorderBrush="#505060">
+        <TextBlock Text="{Binding #This.Text}"
+                   Foreground="#E0E0E0"
                    TextWrapping="Wrap"
-                   FontSize="12"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"/>
+                   TextAlignment="Center"/>
     </Border>
 </UserControl>

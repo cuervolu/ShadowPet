@@ -13,6 +13,14 @@ namespace ShadowPet.Desktop.Views
             PointerPressed += OnPointerPressed;
 
             PointerReleased += OnPointerReleased;
+            DataContextChanged += (sender, args) =>
+            {
+                if (DataContext is MainWindowViewModel vm)
+                {
+                    vm.PositionChanged += position => Position = position;
+                    vm.InitializeScreens(Screens.All);
+                }
+            };
         }
 
         private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
