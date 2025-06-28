@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShadowPet.Desktop.ViewModels"
+        xmlns:views="using:ShadowPet.Desktop.Views"
+        x:Class="ShadowPet.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        SystemDecorations="None"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        ShowInTaskbar="False"
+        Topmost="True"
+        Width="128"
+        Height="128"
+        Icon="/Assets/icon.ico"
+        Title="Shadow Pet">
+
+    <Grid>
+        <Image Name="PetSprite" Source="{Binding PetSprite}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+        <views:DialogueBubble IsVisible="{Binding IsDialogueVisible}"
+                              MaxWidth="200"
+                              VerticalAlignment="Top"
+                              HorizontalAlignment="Center"
+                              Margin="0,-60,0,0"/>
+    </Grid>
+
+</Window>
