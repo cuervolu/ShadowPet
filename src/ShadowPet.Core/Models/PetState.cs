@@ -6,6 +6,9 @@
         Moving,
         Speaking,
         DemandingAttention,
-        Dragging
+        Dragging,
+        FollowingMouse,
+        SillyDance,
+        TakingItem
     }
 }

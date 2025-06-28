@@ -3,13 +3,20 @@
              x:Class="ShadowPet.Desktop.App"
              xmlns:local="using:ShadowPet.Desktop"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Resources>
+        <FontFamily x:Key="PressStart2P">
+            /Assets/Fonts/PressStart2P.ttf#Press Start 2P
+        </FontFamily>
+    </Application.Resources>
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
-  
+
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
+
 </Application>

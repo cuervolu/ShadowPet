@@ -1,12 +1,15 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Microsoft.Extensions.DependencyInjection;
 using ShadowPet.Desktop.ViewModels;
 using ShadowPet.Desktop.Views;
+using System;
 
 namespace ShadowPet.Desktop;
 
@@ -21,17 +24,53 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            var viewModel = Program.ServiceProvider!.GetRequiredService<MainWindowViewModel>();
-            desktop.MainWindow = new MainWindow
+
+            var homeViewModel = Program.ServiceProvider!.GetRequiredService<HomeViewModel>();
+
+            var homeView = new HomeView
             {
-                DataContext = viewModel
+                DataContext = homeViewModel
+            };
+            desktop.MainWindow = homeView;
+
+            homeViewModel.StartPetRequested += () =>
+            {
+                var mainWindowViewModel = Program.ServiceProvider!.GetRequiredService<MainWindowViewModel>();
+                var mainWindow = new MainWindow
+                {
+                    DataContext = mainWindowViewModel
+                };
+
+                ConfigureTrayIcon(mainWindowViewModel);
+
+                mainWindow.Show();
+
+                homeView.Close();
             };
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private void ConfigureTrayIcon(MainWindowViewModel petViewModel)
+    {
+        var icons = new TrayIcons
+        {
+            new TrayIcon
+            {
+                Icon = new(new Bitmap(AssetLoader.Open(new Uri("avares://ShadowPet.Desktop/Assets/icon.ico")))),
+                ToolTipText = "Shadow Pet",
+                Menu = new NativeMenu
+                {
+                    new NativeMenuItem("Hacer una gracia") { Command = petViewModel.DoTrickCommand },
+                    new NativeMenuItemSeparator(),
+                    new NativeMenuItem("Configuracion") { Command = petViewModel.OpenSettingsCommand },
+                    new NativeMenuItem("Salir") { Command = petViewModel.QuitCommand }
+                }
+            }
+        };
+        TrayIcon.SetIcons(this, icons);
     }
 
     private void DisableAvaloniaDataAnnotationValidation()

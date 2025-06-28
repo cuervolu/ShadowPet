@@ -10,12 +10,12 @@ namespace ShadowPet.Desktop.Services
     {
         public event Func<string, Task>? OnAnimationChangeRequested;
         public event Func<string, Task>? OnDialogueRequested;
-        public event Action<PixelPoint>? OnPositionChangeRequested;
+        public event Action? OnFollowMouseRequested;
         public event Action? OnMoveRequested;
 
         private readonly Random _random = new();
         private readonly DispatcherTimer _behaviorTimer;
-        private PetState _currentState = PetState.Idle;
+        private PetState _currentState = PetState.Moving;
         private bool _isBusy = false;
 
         public PetBehaviorService()
@@ -39,31 +39,114 @@ namespace ShadowPet.Desktop.Services
 
         public async Task HandleDragEnd()
         {
-            _currentState = PetState.Idle;
-            await OnAnimationChangeRequested?.Invoke("idle");
+            _currentState = PetState.Moving;
+            await OnAnimationChangeRequested?.Invoke("moving");
         }
 
         private async void OnBehaviorTick(object? sender, EventArgs e)
         {
-            if (_currentState != PetState.Idle) return;
+            if (_isBusy || (_currentState != PetState.Idle && _currentState != PetState.Moving)) return;
 
             var choice = _random.Next(100);
 
-            if (choice < 25)
+            if (choice < 15)
             {
                 await DemandAttention();
             }
-            else if (choice < 50)
+            else if (choice < 30)
             {
                 await Speak();
             }
-            else if (choice < 80)
+            else if (choice < 50)
             {
                 await MoveRandomly();
             }
+            else if (choice < 65)
+            {
+                await FollowMouse();
+            }
+            else if (choice < 80)
+            {
+                await MakeSillyDance();
+            }
+            else if (choice < 95)
+            {
+                await TakeItem();
+            }
 
-            _behaviorTimer.Interval = TimeSpan.FromSeconds(_random.Next(5, 15));
+            _behaviorTimer.Interval = TimeSpan.FromSeconds(_random.Next(5, 12));
         }
+
+        private async Task MakeSillyDance()
+        {
+            _isBusy = true;
+            _currentState = PetState.SillyDance;
+            await OnAnimationChangeRequested?.Invoke("victoria_face");
+
+            await Task.Delay(3000);
+
+            _currentState = PetState.Moving;
+            await OnAnimationChangeRequested?.Invoke("moving");
+            _isBusy = false;
+        }
+
+        private async Task TakeItem()
+        {
+            _isBusy = true;
+            _currentState = PetState.TakingItem;
+
+            await OnAnimationChangeRequested?.Invoke("take_item_intro");
+            await Task.Delay(1500);
+
+            if (_currentState == PetState.TakingItem)
+            {
+                await OnAnimationChangeRequested?.Invoke("take_item_loop");
+                await Task.Delay(3000);
+            }
+
+            _currentState = PetState.Moving;
+            await OnAnimationChangeRequested?.Invoke("moving");
+            _isBusy = false;
+        }
+
+        private async Task FollowMouse()
+        {
+            _isBusy = true;
+            _currentState = PetState.FollowingMouse;
+            await OnAnimationChangeRequested?.Invoke("moving");
+
+            var followDuration = 4000;
+            var followStopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+            while (followStopwatch.ElapsedMilliseconds < followDuration)
+            {
+                OnFollowMouseRequested?.Invoke();
+                await Task.Delay(30);
+            }
+
+            _currentState = PetState.Moving;
+            _isBusy = false;
+        }
+
+        public async Task TriggerSpecificAnimation(string animationName)
+        {
+            if (_isBusy) return;
+
+            _isBusy = true;
+
+
+            var previousState = _currentState;
+            _currentState = PetState.SillyDance;
+
+            await OnAnimationChangeRequested?.Invoke(animationName);
+
+            await Task.Delay(3000);
+
+            _currentState = previousState;
+            await OnAnimationChangeRequested?.Invoke("moving");
+            _isBusy = false;
+        }
+
 
         private async Task MoveRandomly()
         {
@@ -71,11 +154,6 @@ namespace ShadowPet.Desktop.Services
             await OnAnimationChangeRequested?.Invoke("moving");
 
             OnMoveRequested?.Invoke();
-
-            await Task.Delay(3000);
-
-            _currentState = PetState.Idle;
-            await OnAnimationChangeRequested?.Invoke("idle");
         }
 
         private async Task DemandAttention()
@@ -84,10 +162,10 @@ namespace ShadowPet.Desktop.Services
             _currentState = PetState.DemandingAttention;
             await OnAnimationChangeRequested?.Invoke("attention");
 
-            await Task.Delay(4000);
+            await Task.Delay(2500);
 
-            _currentState = PetState.Idle;
-            await OnAnimationChangeRequested?.Invoke("idle");
+            _currentState = PetState.Moving;
+            await OnAnimationChangeRequested?.Invoke("moving");
             _isBusy = false;
         }
 
@@ -101,10 +179,10 @@ namespace ShadowPet.Desktop.Services
 
             await Task.Delay(5000);
 
-            await OnAnimationChangeRequested?.Invoke("idle");
+            await OnAnimationChangeRequested?.Invoke("moving");
             await OnDialogueRequested?.Invoke("hide");
 
-            _currentState = PetState.Idle;
+            _currentState = PetState.Moving;
             _isBusy = false;
         }
     }

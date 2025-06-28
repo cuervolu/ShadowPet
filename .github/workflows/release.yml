@@ -1,0 +1,48 @@
+﻿name: Create Velopack Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish application
+        run: dotnet publish src/ShadowPet.Desktop -c Release -r win-x64 --self-contained true -o publish
+
+      - name: Get version from tag
+        id: get_version
+        # Extrae la versión del tag (ej. de 'v1.0.1' obtiene '1.0.1')
+        run: echo "version=${{ github.ref_name }}" | sed 's/v//' >> $env:GITHUB_OUTPUT
+        shell: bash
+
+      - name: Install vpk tool
+        run: dotnet tool install -g vpk
+
+      - name: Create Velopack Release
+        run: vpk pack -u dev.cuervolu.ShadowPet -v ${{ steps.get_version.outputs.version }} -p .\publish -o .\Releases
+
+      - name: Upload Artifacts to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: "Release automatica de la version ${{ steps.get_version.outputs.version }}."
+          draft: true
+          files: |
+            Releases/*

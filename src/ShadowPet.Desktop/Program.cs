@@ -6,6 +6,7 @@ using ShadowPet.Desktop.Services;
 using ShadowPet.Desktop.ViewModels;
 using System;
 using System.IO;
+using Velopack;
 
 namespace ShadowPet.Desktop;
 
@@ -18,6 +19,7 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        VelopackApp.Build().Run();
         // Configure services
         var services = new ServiceCollection();
         ConfigureServices(services);
@@ -55,6 +57,7 @@ sealed class Program
 
         services.AddLogging(builder => builder.AddSerilog());
 
+        services.AddSingleton<UpdateService>();
         services.AddSingleton<AppPaths>();
         services.AddSingleton<AnimationService>();
         services.AddSingleton<DialogueService>();
@@ -63,6 +66,8 @@ sealed class Program
 
         // ViewModels
         services.AddTransient<MainWindowViewModel>();
+        services.AddTransient<HomeViewModel>();
+        services.AddTransient<UpdateViewModel>();
     }
 
 

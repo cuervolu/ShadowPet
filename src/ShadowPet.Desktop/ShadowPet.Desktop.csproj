@@ -9,11 +9,25 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+
+
+
+    <PackageId>dev.cuervolu.ShadowPet</PackageId>
+    <Title>Shadow Pet</Title>
+    <Authors>Cuervolu</Authors>
+    <Description>Un companero de escritorio no solicitado.</Description>
+    <Copyright>Copyright 2025</Copyright>
+    <PackageIcon>Assets\icon.ico</PackageIcon>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Models\"/>
     <AvaloniaResource Include="Assets\**"/>
+    <None Include="Assets\icon.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +47,7 @@
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
 
   <ItemGroup>

@@ -44,6 +44,7 @@ namespace ShadowPet.Desktop.Services
 
                 var waveStream = new Mp3FileReader(memoryStream);
                 _outputDevice.Init(waveStream);
+                _outputDevice.Volume = 0.4f; 
                 _outputDevice.Play();
             }
             catch (Exception ex)

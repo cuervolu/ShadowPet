@@ -1,16 +1,23 @@
 ﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
+using NuGet.Versioning;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Services;
 using ShadowPet.Desktop.Services;
+using ShadowPet.Desktop.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Velopack;
 
 namespace ShadowPet.Desktop.ViewModels
 {
@@ -21,6 +28,10 @@ namespace ShadowPet.Desktop.ViewModels
         private readonly DialogueService _dialogueService;
         private readonly AudioService _audioService;
 
+        private readonly ILogger<MainWindowViewModel> _logger;
+        private readonly UpdateService _updateService;
+        private readonly DispatcherTimer _updateCheckTimer;
+
         private readonly DispatcherTimer _animationTimer;
         private PetAnimation? _currentAnimation;
         private Bitmap? _spriteSheet;
@@ -29,6 +40,13 @@ namespace ShadowPet.Desktop.ViewModels
         public event Action<PixelPoint>? PositionChanged;
         private readonly Random _random = new();
         private IReadOnlyList<Screen> _screens;
+        private double _windowWidth;
+        private double _windowHeight;
+        private PixelPoint _mouseScreenPosition;
+        private readonly DispatcherTimer _moveTimer;
+        private PixelPoint _currentPosition;
+        private PixelPoint _targetPosition;
+        private const double MoveSpeed = 0.05;
 
         [ObservableProperty]
         private CroppedBitmap? _petSprite;
@@ -39,22 +57,142 @@ namespace ShadowPet.Desktop.ViewModels
         [ObservableProperty]
         private string? _dialogueText;
 
-        public MainWindowViewModel(AnimationService animationService, PetBehaviorService behaviorService, DialogueService dialogueService, AudioService audioService)
+        public ICommand DoTrickCommand { get; }
+        public ICommand OpenSettingsCommand { get; }
+        public ICommand QuitCommand { get; }
+        public ICommand CheckForUpdatesCommand { get; }
+
+        public MainWindowViewModel(AnimationService animationService, PetBehaviorService behaviorService, DialogueService dialogueService, AudioService audioService, ILogger<MainWindowViewModel> logger, UpdateService updateService)
         {
             _animationService = animationService;
             _behaviorService = behaviorService;
             _dialogueService = dialogueService;
             _audioService = audioService;
+            _logger = logger;
+            _updateService = updateService;
 
+            _moveTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(16), DispatcherPriority.Normal, OnMoveTick);
             _animationTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(16), DispatcherPriority.Normal, OnAnimationTick);
 
             _behaviorService.OnAnimationChangeRequested += SetAnimation;
             _behaviorService.OnDialogueRequested += HandleDialogueRequest;
             _behaviorService.OnMoveRequested += HandleMoveRequest;
-            // ...
-            SetAnimation("idle");
+            _behaviorService.OnFollowMouseRequested += HandleFollowMouseRequest;
+
+            DoTrickCommand = new RelayCommand(() => _behaviorService.TriggerSpecificAnimation("victoria_face"));
+            OpenSettingsCommand = new RelayCommand(OpenSettings);
+            QuitCommand = new RelayCommand(QuitApplication);
+            CheckForUpdatesCommand = new RelayCommand(async () => await _updateService.CheckForUpdates());
+            _updateService.UpdateAvailable += OnUpdateAvailable;
+
+            SetAnimation("moving");
             _behaviorService.Start();
+            _moveTimer.Start();
+            _updateCheckTimer = new DispatcherTimer(TimeSpan.FromHours(2), DispatcherPriority.Background, async (s, e) => await _updateService.CheckForUpdates());
+            _updateCheckTimer.Start();
+
+            // ShowFakeUpdateModalForTesting();
         }
+
+        // private async Task ShowFakeUpdateModalForTesting()
+        // {
+        //     await Task.Delay(500);
+        //
+        //     var fakeUpdateAsset = new VelopackAsset {
+        //         PackageId = "dev.cuervolu.ShadowPet",
+        //         Version = new SemanticVersion(1, 2, 3),
+        //         NotesMarkdown = "### Novedades\n\n- Se corrigio un bug que hacia que Shadow se robara tus contrasenas.\n- Ahora es 20% mas molesto.\n- Se anadieron mas dialogos sin sentido para que no te sientas solo."
+        //     };
+        //     var fakeUpdateInfo = new UpdateInfo(fakeUpdateAsset,false);
+        //
+        //     OnUpdateAvailable(fakeUpdateInfo);
+        // }
+
+
+        private async void OnUpdateAvailable(UpdateInfo updateInfo)
+        {
+            await Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                var updateView = new UpdateView();
+                updateView.DataContext = new UpdateViewModel(updateView, updateInfo);
+
+                var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+
+                var owner = lifetime?.Windows.OfType<MainWindow>().FirstOrDefault(w => w.IsActive);
+                var result = await updateView.ShowDialog<bool?>(owner);
+
+                if (result == true)
+                {
+                    _logger.LogInformation("Usuario acepto la actualizacion. Descargando...");
+                    _ = _updateService.DownloadAndApplyUpdates(updateInfo);
+                }
+                else
+                {
+                    _logger.LogInformation("Usuario omitio la actualizacion v{Version}", updateInfo.TargetFullRelease.Version);
+                }
+            });
+        }
+
+        private void OpenSettings()
+        {
+            DialogueText = "La configuración aún no está lista. ¡Paciencia!";
+            IsDialogueVisible = true;
+        }
+
+        private void QuitApplication()
+        {
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
+            {
+                lifetime.Shutdown();
+            }
+        }
+
+        public void SetInitialPosition(PixelPoint position)
+        {
+            _currentPosition = position;
+            _targetPosition = position;
+        }
+
+        private void OnMoveTick(object? sender, EventArgs e)
+        {
+            var deltaX = _targetPosition.X - _currentPosition.X;
+            var deltaY = _targetPosition.Y - _currentPosition.Y;
+
+            if (Math.Abs(deltaX) < 1 && Math.Abs(deltaY) < 1)
+            {
+                return;
+            }
+
+            _currentPosition = new PixelPoint(
+                (int)(_currentPosition.X + deltaX * MoveSpeed),
+                (int)(_currentPosition.Y + deltaY * MoveSpeed)
+            );
+
+            PositionChanged?.Invoke(_currentPosition);
+        }
+
+
+        public void SetWindowSize(double width, double height)
+        {
+            _windowWidth = width;
+            _windowHeight = height;
+        }
+
+        public void UpdateMousePosition(PixelPoint screenPosition)
+        {
+            _mouseScreenPosition = screenPosition;
+        }
+
+        private void HandleFollowMouseRequest() // Seguir al mouse
+        {
+            if (_windowWidth == 0 || _windowHeight == 0) return;
+
+            _targetPosition = new PixelPoint(
+                (int)(_mouseScreenPosition.X - (_windowWidth / 2)),
+                (int)(_mouseScreenPosition.Y - (_windowHeight / 2))
+            );
+        }
+
 
         private async Task HandleDialogueRequest(string command)
         {
@@ -102,7 +240,7 @@ namespace ShadowPet.Desktop.ViewModels
 
             if (!_currentAnimation.IsLooping && nextFrame >= _currentAnimation.FrameCount)
             {
-                SetAnimation("idle");
+                _animationTimer.Stop();
                 return;
             }
 
@@ -128,10 +266,10 @@ namespace ShadowPet.Desktop.ViewModels
             var primaryScreen = _screens.FirstOrDefault(s => s.IsPrimary) ?? _screens[0];
             var workingArea = primaryScreen.WorkingArea;
 
-            var targetX = _random.Next(0, workingArea.Width);
-            var targetY = _random.Next(0, workingArea.Height);
-
-            PositionChanged?.Invoke(new PixelPoint(targetX, targetY));
+            _targetPosition = new PixelPoint(
+                _random.Next(workingArea.X, workingArea.Width - (int)_windowWidth),
+                _random.Next(workingArea.Y, workingArea.Height - (int)_windowHeight)
+            );
         }
 
         public void Dispose()

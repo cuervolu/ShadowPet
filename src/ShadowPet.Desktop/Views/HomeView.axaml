@@ -1,0 +1,117 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShadowPet.Desktop.ViewModels"
+        x:Class="ShadowPet.Desktop.Views.HomeView"
+        x:DataType="vm:HomeViewModel"
+        Icon="/Assets/icon.ico"
+        Title="Bienvenido a Shadow Pet"
+        Width="650" Height="550"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="Full"
+        FontFamily="{StaticResource PressStart2P}">
+
+    <Window.Styles>
+        <Style Selector="Border.nes-container">
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value="4" />
+        </Style>
+        <Style Selector="Border.nes-container TextBlock">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+
+        <Style Selector="Button.nes-btn">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Padding" Value="16,12" />
+            <Setter Property="BorderThickness" Value="4" />
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Effect">
+                <DropShadowEffect OffsetX="4" OffsetY="4" BlurRadius="0" Color="Black" />
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.nes-btn.is-primary">
+            <Setter Property="Background" Value="#28a745" />
+        </Style>
+        <Style Selector="Button.nes-btn.is-primary:pointerover">
+            <Setter Property="Background" Value="#218838" />
+        </Style>
+
+        <Style Selector="Button.nes-btn:pressed">
+            <Setter Property="Effect">
+                <DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="0" Color="Black" />
+            </Setter>
+            <Setter Property="RenderTransform">
+                <TranslateTransform X="4" Y="4" />
+            </Setter>
+        </Style>
+    </Window.Styles>
+
+    <Grid>
+        <!-- Fondo con gradiente -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#667eea" Offset="0.0" />
+                <GradientStop Color="#764ba2" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
+            <!-- Contenedor del Título -->
+            <Border Classes="nes-container">
+                <StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center">
+                    <TextBlock Text="¡Dale la bienvenida a tu nueva"
+                               FontSize="12" TextWrapping="Wrap" TextAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                        <TextBlock Text="maldicion"
+                                   TextDecorations="Strikethrough"
+                                   Foreground="#dc3545"
+                                   FontSize="12"/>
+                        <TextBlock Text="mascota!"
+                                   FontSize="12"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Contenedor de la Descripción -->
+            <Border Classes="nes-container">
+                <StackPanel Spacing="15" MaxWidth="500">
+                    <TextBlock Text="Es el protagonista de la novela Yaoi... digo digo, un antagonista de Cookie Run Kingdom y ahora sera TU problema."
+                               FontSize="9" TextWrapping="Wrap" LineHeight="18" TextAlignment="Center"/>
+                    <TextBlock Text="Camina, habla, y mas weas que me dan paja describir, averigualo dando click en este boton para ver nacer a esta bestia!"
+                               FontSize="9" TextWrapping="Wrap" LineHeight="18" TextAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Botón Principal -->
+            <Button Content="🍪 ¡Liberar a Shadow Milk Cookie! 🍪"
+                    Classes="nes-btn is-primary"
+                    Command="{Binding StartPetCommand}"
+                    HorizontalAlignment="Center"/>
+
+            <!-- Opciones -->
+            <CheckBox IsChecked="{Binding StartWithSystem}"
+                      Command="{Binding ToggleStartWithSystemCommand}"
+                      CommandParameter="{Binding $self.IsChecked}"
+                      HorizontalAlignment="Center">
+                <TextBlock Text="Iniciar con el sistema (para sufrir desde el boot)"
+                           FontSize="9"
+                           Foreground="White"/>
+            </CheckBox>
+        </StackPanel>
+
+        <!-- Footer -->
+        <TextBlock Text="Hecho con ❤️ por Cuervolu"
+                   FontSize="8"
+                   Foreground="White"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Bottom"
+                   Margin="20"/>
+    </Grid>
+</Window>

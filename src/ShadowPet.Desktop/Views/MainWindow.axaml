@@ -12,17 +12,23 @@
         Topmost="True"
         Width="200"
         Height="200"
+        FontFamily="{DynamicResource PressStart2P}"
         Icon="/Assets/icon.ico"
         Title="Shadow Pet">
 
-    <Grid>
-        <Image Name="PetSprite" Source="{Binding PetSprite}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+    <Grid RowDefinitions="Auto, *">
 
-        <views:DialogueBubble IsVisible="{Binding IsDialogueVisible}"
-                              MaxWidth="200"
-                              VerticalAlignment="Top"
+        <views:DialogueBubble Grid.Row="0"
+                              IsVisible="{Binding IsDialogueVisible}"
+                              Text="{Binding DialogueText}" MaxWidth="180"
                               HorizontalAlignment="Center"
-                              Margin="0,-60,0,0"/>
+                              Margin="0,0,0,5" />
+        <Image Grid.Row="1"
+               Name="PetSprite"
+               Source="{Binding PetSprite}"
+               VerticalAlignment="Center"
+               HorizontalAlignment="Center" />
+
     </Grid>
 
 </Window>
