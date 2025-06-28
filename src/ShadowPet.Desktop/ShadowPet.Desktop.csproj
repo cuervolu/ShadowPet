@@ -9,9 +9,8 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-
-
-
+    <AssemblyName>ShadowPet</AssemblyName>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
     <PackageId>dev.cuervolu.ShadowPet</PackageId>
     <Title>Shadow Pet</Title>
     <Authors>Cuervolu</Authors>
