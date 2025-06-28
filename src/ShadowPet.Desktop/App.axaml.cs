@@ -59,7 +59,7 @@ public partial class App : Application
         {
             new TrayIcon
             {
-                Icon = new(new Bitmap(AssetLoader.Open(new Uri("avares://ShadowPet.Desktop/Assets/icon.ico")))),
+                Icon = new(new Bitmap(AssetLoader.Open(new Uri("avares://ShadowPet/Assets/icon.ico")))),
                 ToolTipText = "Shadow Pet",
                 Menu = new NativeMenu
                 {

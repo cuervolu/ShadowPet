@@ -11,16 +11,16 @@ namespace ShadowPet.Desktop.Services
         private readonly Random _random = new();
         private readonly List<string> _speakSoundPaths =
         [
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_2.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_3.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_4.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_6.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_7.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_8.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_9.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_10.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_12.mp3",
-            "avares://ShadowPet.Desktop/Assets/Raw/Audio/WilsonVoice_generic_13.mp3"
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_2.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_3.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_4.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_6.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_7.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_8.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_9.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_10.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_12.mp3",
+            "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_13.mp3"
 
         ];
         private WaveOutEvent? _outputDevice;

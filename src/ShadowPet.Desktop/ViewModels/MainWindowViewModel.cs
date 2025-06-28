@@ -223,7 +223,7 @@ namespace ShadowPet.Desktop.ViewModels
             _currentAnimation = newAnimation;
             _currentFrame = 0;
 
-            var assets = AssetLoader.Open(new Uri($"avares://ShadowPet.Desktop{_currentAnimation.SpriteSheetPath}"));
+            var assets = AssetLoader.Open(new Uri($"avares://ShadowPet{_currentAnimation.SpriteSheetPath}"));
             _spriteSheet = new Bitmap(assets);
 
             _animationTimer.Start();
