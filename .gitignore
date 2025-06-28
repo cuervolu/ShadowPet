@@ -480,3 +480,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 /.idea/.idea.ShadowPet/.idea/git_toolbox_prj.xml
+/Releases_Local/
