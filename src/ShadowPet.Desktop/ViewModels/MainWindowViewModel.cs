@@ -209,7 +209,12 @@ namespace ShadowPet.Desktop.ViewModels
 
         private async Task HandleDialogueRequest(string command)
         {
-            if (command == "show")
+            if (command == "hide")
+            {
+                IsDialogueVisible = false;
+                DialogueText = null;
+            }
+            else if (command == "show")
             {
                 DialogueText = _dialogueService.GetRandomDialogue();
                 IsDialogueVisible = true;
@@ -217,8 +222,9 @@ namespace ShadowPet.Desktop.ViewModels
             }
             else
             {
-                IsDialogueVisible = false;
-                DialogueText = null;
+                DialogueText = command;
+                IsDialogueVisible = true;
+                _audioService.PlayRandomSpeakSound();
             }
         }
 

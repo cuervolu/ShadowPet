@@ -2,7 +2,9 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
 using ShadowPet.Core.Models;
+using ShadowPet.Core.Services;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 namespace ShadowPet.Desktop.Services
 {
@@ -18,8 +20,15 @@ namespace ShadowPet.Desktop.Services
         private PetState _currentState = PetState.Moving;
         private bool _isBusy = false;
 
-        public PetBehaviorService()
+        private readonly SettingsService _settingsService;
+        private readonly ProcessService _processService;
+        private readonly AnnoyingMessagesService _annoyingMessagesService;
+
+        public PetBehaviorService(SettingsService settingsService, ProcessService processService, AnnoyingMessagesService annoyingMessagesService)
         {
+            _settingsService = settingsService;
+            _processService = processService;
+            _annoyingMessagesService = annoyingMessagesService;
             _behaviorTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(5),
@@ -92,18 +101,43 @@ namespace ShadowPet.Desktop.Services
 
         private async Task TakeItem()
         {
+            var settings = _settingsService.LoadSettings();
+            var possibleActions = settings.PetActions
+                .Where(a => !string.IsNullOrWhiteSpace(a.ProgramPath))
+                .ToList();
+
+            if (!possibleActions.Any())
+            {
+                await OnDialogueRequested?.Invoke("Uhm... creo que no tengo ideas.");
+                await Task.Delay(2000);
+                await OnDialogueRequested?.Invoke("hide");
+                return;
+            }
+
             _isBusy = true;
             _currentState = PetState.TakingItem;
 
+            var action = possibleActions[_random.Next(possibleActions.Count)];
+
+            var allMessages = _annoyingMessagesService.GetAllMessages();
+
+            var message = allMessages[_random.Next(allMessages.Count)];
+
+            await OnDialogueRequested?.Invoke($"¡Je, je! ¿Qué tal una nota?");
             await OnAnimationChangeRequested?.Invoke("take_item_intro");
             await Task.Delay(1500);
 
             if (_currentState == PetState.TakingItem)
             {
                 await OnAnimationChangeRequested?.Invoke("take_item_loop");
-                await Task.Delay(3000);
+                await Task.Delay(2000);
+
+                _processService.StartProcessWithText(action.ProgramPath, message);
+
+                await Task.Delay(1000);
             }
 
+            await OnDialogueRequested?.Invoke("hide");
             _currentState = PetState.Moving;
             await OnAnimationChangeRequested?.Invoke("moving");
             _isBusy = false;

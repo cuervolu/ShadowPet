@@ -2,12 +2,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ShadowPet.Desktop.ViewModels"
         xmlns:views="using:ShadowPet.Desktop.Views"
-        xmlns:converters="clr-namespace:ShadowPet.Desktop.Converters"
         x:Class="ShadowPet.Desktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/icon.ico"
         Title="Shadow Pet"
-        Height="150" Width="150"
         Topmost="True"
         SystemDecorations="None"
         Background="Transparent"
@@ -16,25 +14,18 @@
         ShowInTaskbar="False"
         SizeToContent="WidthAndHeight">
 
-    <Window.Resources>
-        <converters:RelativeTranslateConverter x:Key="RelativeTranslate" />
-    </Window.Resources>
+    <Panel Width="350" Margin="10">
 
-    <Canvas>
-        <Image Width="150" Height="150"
+        <Image VerticalAlignment="Bottom" HorizontalAlignment="Left"
+               Width="200" Height="200"
                Source="{Binding PetSprite}"
                Stretch="Uniform"/>
 
         <views:DialogueBubble
-            x:Name="DialogueBubble"
+            VerticalAlignment="Top" HorizontalAlignment="Right"
+            Margin="0,0,0,0"
             IsVisible="{Binding IsDialogueVisible}"
-            Text="{Binding DialogueText}"
-            Canvas.Left="75"
-            Canvas.Top="-100">
-            <views:DialogueBubble.RenderTransform>
-                <TranslateTransform
-                    X="{Binding #DialogueBubble.Bounds.Width, Converter={StaticResource RelativeTranslate}, ConverterParameter='-0.5'}" />
-            </views:DialogueBubble.RenderTransform>
-        </views:DialogueBubble>
-    </Canvas>
+            Text="{Binding DialogueText}"/>
+
+    </Panel>
 </Window>

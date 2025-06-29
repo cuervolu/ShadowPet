@@ -56,7 +56,8 @@ sealed class Program
             .CreateLogger();
 
         services.AddLogging(builder => builder.AddSerilog());
-
+        services.AddSingleton<AnnoyingMessagesService>();
+        services.AddSingleton<ProcessService>();
         services.AddSingleton<UpdateService>();
         services.AddSingleton<AppPaths>();
         services.AddSingleton<SettingsService>();
