@@ -31,6 +31,7 @@ namespace ShadowPet.Desktop.Views
         {
             if (DataContext is MainWindowViewModel vm)
             {
+                vm.UpdatePosition(this.Position);
                 vm.StartDragging();
             }
             BeginMoveDrag(e);

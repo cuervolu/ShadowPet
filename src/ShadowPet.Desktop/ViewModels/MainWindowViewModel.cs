@@ -166,8 +166,20 @@ namespace ShadowPet.Desktop.ViewModels
             _targetPosition = position;
         }
 
+        public void UpdatePosition(PixelPoint newPosition)
+        {
+            _currentPosition = newPosition;
+            _targetPosition = newPosition;
+        }
+
+
         private void OnMoveTick(object? sender, EventArgs e)
         {
+            if (_behaviorService.CurrentState == PetState.Dragging)
+            {
+                return;
+            }
+
             var deltaX = _targetPosition.X - _currentPosition.X;
             var deltaY = _targetPosition.Y - _currentPosition.Y;
 

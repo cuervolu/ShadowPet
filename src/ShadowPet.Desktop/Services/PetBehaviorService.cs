@@ -19,7 +19,7 @@ namespace ShadowPet.Desktop.Services
 
         private readonly Random _random = new();
         private readonly DispatcherTimer _behaviorTimer;
-        private PetState _currentState = PetState.Moving;
+        public PetState CurrentState { get; private set; } = PetState.Moving;
         private bool _isBusy = false;
 
         private readonly SettingsService _settingsService;
@@ -46,19 +46,19 @@ namespace ShadowPet.Desktop.Services
 
         public async Task HandleDragStart()
         {
-            _currentState = PetState.Dragging;
+            CurrentState = PetState.Dragging;
             await OnAnimationChangeRequested?.Invoke("dragging");
         }
 
         public async Task HandleDragEnd()
         {
-            _currentState = PetState.Moving;
+            CurrentState = PetState.Moving;
             await OnAnimationChangeRequested?.Invoke("moving");
         }
 
         private async void OnBehaviorTick(object? sender, EventArgs e)
         {
-            if (_isBusy || (_currentState != PetState.Idle && _currentState != PetState.Moving)) return;
+            if (_isBusy || (CurrentState != PetState.Idle && CurrentState != PetState.Moving)) return;
 
             var choice = _random.Next(100);
 
@@ -93,12 +93,12 @@ namespace ShadowPet.Desktop.Services
         private async Task MakeSillyDance()
         {
             _isBusy = true;
-            _currentState = PetState.SillyDance;
+            CurrentState = PetState.SillyDance;
             await OnAnimationChangeRequested?.Invoke("victoria_face");
 
             await Task.Delay(3000);
 
-            _currentState = PetState.Moving;
+            CurrentState = PetState.Moving;
             await OnAnimationChangeRequested?.Invoke("moving");
             _isBusy = false;
         }
@@ -119,7 +119,7 @@ namespace ShadowPet.Desktop.Services
             }
 
             _isBusy = true;
-            _currentState = PetState.TakingItem;
+            CurrentState = PetState.TakingItem;
 
             var action = possibleActions[_random.Next(possibleActions.Count)];
 
@@ -143,7 +143,7 @@ namespace ShadowPet.Desktop.Services
             await OnAnimationChangeRequested?.Invoke("take_item_intro");
             await Task.Delay(1500);
 
-            if (_currentState == PetState.TakingItem)
+            if (CurrentState == PetState.TakingItem)
             {
                 await OnAnimationChangeRequested?.Invoke("take_item_loop");
                 await Task.Delay(2000);
@@ -154,7 +154,7 @@ namespace ShadowPet.Desktop.Services
             }
 
             await OnDialogueRequested?.Invoke("hide");
-            _currentState = PetState.Moving;
+            CurrentState = PetState.Moving;
             await OnAnimationChangeRequested?.Invoke("moving");
             _isBusy = false;
         }
@@ -162,7 +162,7 @@ namespace ShadowPet.Desktop.Services
         private async Task FollowMouse()
         {
             _isBusy = true;
-            _currentState = PetState.FollowingMouse;
+            CurrentState = PetState.FollowingMouse;
             await OnAnimationChangeRequested?.Invoke("moving");
 
             var followDuration = 4000;
@@ -174,7 +174,7 @@ namespace ShadowPet.Desktop.Services
                 await Task.Delay(30);
             }
 
-            _currentState = PetState.Moving;
+            CurrentState = PetState.Moving;
             _isBusy = false;
         }
 
@@ -185,14 +185,14 @@ namespace ShadowPet.Desktop.Services
             _isBusy = true;
 
 
-            var previousState = _currentState;
-            _currentState = PetState.SillyDance;
+            var previousState = CurrentState;
+            CurrentState = PetState.SillyDance;
 
             await OnAnimationChangeRequested?.Invoke(animationName);
 
             await Task.Delay(3000);
 
-            _currentState = previousState;
+            CurrentState = previousState;
             await OnAnimationChangeRequested?.Invoke("moving");
             _isBusy = false;
         }
@@ -200,7 +200,7 @@ namespace ShadowPet.Desktop.Services
 
         private async Task MoveRandomly()
         {
-            _currentState = PetState.Moving;
+            CurrentState = PetState.Moving;
             await OnAnimationChangeRequested?.Invoke("moving");
 
             OnMoveRequested?.Invoke();
@@ -209,12 +209,12 @@ namespace ShadowPet.Desktop.Services
         private async Task DemandAttention()
         {
             _isBusy = true;
-            _currentState = PetState.DemandingAttention;
+            CurrentState = PetState.DemandingAttention;
             await OnAnimationChangeRequested?.Invoke("attention");
 
             await Task.Delay(2500);
 
-            _currentState = PetState.Moving;
+            CurrentState = PetState.Moving;
             await OnAnimationChangeRequested?.Invoke("moving");
             _isBusy = false;
         }
@@ -222,7 +222,7 @@ namespace ShadowPet.Desktop.Services
         private async Task Speak()
         {
             _isBusy = true;
-            _currentState = PetState.Speaking;
+            CurrentState = PetState.Speaking;
 
             await OnAnimationChangeRequested?.Invoke("interacting");
             await OnDialogueRequested?.Invoke("show");
@@ -232,7 +232,7 @@ namespace ShadowPet.Desktop.Services
             await OnAnimationChangeRequested?.Invoke("moving");
             await OnDialogueRequested?.Invoke("hide");
 
-            _currentState = PetState.Moving;
+            CurrentState = PetState.Moving;
             _isBusy = false;
         }
     }
