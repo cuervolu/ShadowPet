@@ -10,49 +10,6 @@
         WindowStartupLocation="CenterScreen"
         SystemDecorations="Full"
         FontFamily="{StaticResource PressStart2P}">
-
-    <Window.Styles>
-        <Style Selector="Border.nes-container">
-            <Setter Property="Background" Value="#FFFFFF" />
-            <Setter Property="Padding" Value="20" />
-            <Setter Property="BorderBrush" Value="Black" />
-            <Setter Property="BorderThickness" Value="4" />
-        </Style>
-        <Style Selector="Border.nes-container TextBlock">
-            <Setter Property="Foreground" Value="Black" />
-        </Style>
-
-        <Style Selector="Button.nes-btn">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Padding" Value="16,12" />
-            <Setter Property="BorderThickness" Value="4" />
-            <Setter Property="BorderBrush" Value="Black" />
-            <Setter Property="CornerRadius" Value="0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="Effect">
-                <DropShadowEffect OffsetX="4" OffsetY="4" BlurRadius="0" Color="Black" />
-            </Setter>
-        </Style>
-
-        <Style Selector="Button.nes-btn.is-primary">
-            <Setter Property="Background" Value="#28a745" />
-        </Style>
-        <Style Selector="Button.nes-btn.is-primary:pointerover">
-            <Setter Property="Background" Value="#218838" />
-        </Style>
-
-        <Style Selector="Button.nes-btn:pressed">
-            <Setter Property="Effect">
-                <DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="0" Color="Black" />
-            </Setter>
-            <Setter Property="RenderTransform">
-                <TranslateTransform X="4" Y="4" />
-            </Setter>
-        </Style>
-    </Window.Styles>
-
     <Grid>
         <!-- Fondo con gradiente -->
         <Grid.Background>

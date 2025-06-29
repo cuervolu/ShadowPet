@@ -1,0 +1,101 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style>
+        <Style.Resources>
+            <FontFamily x:Key="PressStart2P">/Assets/Fonts/PressStart2P.ttf#Press Start 2P</FontFamily>
+        </Style.Resources>
+    </Style>
+
+    <Style Selector="Border.nes-container">
+        <Setter Property="Background" Value="#FFFFFF" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="BorderThickness" Value="4" />
+    </Style>
+
+    <Style Selector="TextBlock">
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="FontSize" Value="10" />
+    </Style>
+
+    <Style Selector="TextBlock.Header">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Margin" Value="0,15,0,8"/>
+        <Setter Property="Foreground" Value="#209cee"/>
+    </Style>
+
+    <Style Selector="Button.nes-btn">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="BorderThickness" Value="4" />
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Effect">
+            <DropShadowEffect OffsetX="4" OffsetY="4" BlurRadius="0" Color="Black" />
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.nes-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{Binding $parent[Button].Background}" />
+    </Style>
+
+    <Style Selector="Button.nes-btn.is-primary">
+        <Setter Property="Background" Value="#28a745" />
+    </Style>
+    <Style Selector="Button.nes-btn.is-primary:pointerover">
+        <Setter Property="Background" Value="#218838" />
+    </Style>
+
+    <Style Selector="Button.nes-btn.is-error">
+        <Setter Property="Background" Value="#e74c3c" />
+    </Style>
+    <Style Selector="Button.nes-btn.is-error:pointerover">
+        <Setter Property="Background" Value="#c0392b" />
+    </Style>
+
+    <Style Selector="Button.nes-btn.is-warning">
+        <Setter Property="Background" Value="#f0ad4e" />
+    </Style>
+    <Style Selector="Button.nes-btn.is-warning:pointerover">
+        <Setter Property="Background" Value="#ec971f" />
+    </Style>
+
+    <Style Selector="Button.nes-btn:pressed">
+        <Setter Property="Effect">
+            <DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="0" Color="Black" />
+        </Setter>
+        <Setter Property="RenderTransform">
+            <TranslateTransform X="4" Y="4" />
+        </Setter>
+    </Style>
+
+    <Style Selector="CheckBox TextBlock">
+        <Setter Property="FontSize" Value="9" />
+    </Style>
+
+    <Style Selector="Slider">
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Margin" Value="0,5,0,10"/>
+    </Style>
+    <Style Selector="Slider /template/ RepeatButton#PART_TrackFill">
+        <Setter Property="Background" Value="#209cee" />
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="2 0 2 2"/>
+    </Style>
+    <Style Selector="Slider /template/ RepeatButton#PART_TrackBackground">
+        <Setter Property="Background" Value="#dedede" />
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="2 0 2 2"/>
+    </Style>
+    <Style Selector="Slider /template/ Thumb">
+        <Setter Property="Width" Value="16"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="BorderThickness" Value="4"/>
+        <Setter Property="CornerRadius" Value="0"/>
+    </Style>
+</Styles>

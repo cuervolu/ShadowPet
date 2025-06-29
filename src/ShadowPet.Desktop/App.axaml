@@ -17,6 +17,7 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://ShadowPet/Styles.axaml"/>
     </Application.Styles>
 
 </Application>

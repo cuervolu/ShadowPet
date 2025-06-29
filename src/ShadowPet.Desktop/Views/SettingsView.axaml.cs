@@ -19,9 +19,15 @@ namespace ShadowPet.Desktop.Views
             if (Screens.Primary != null)
             {
                 var workArea = Screens.Primary.WorkingArea;
-                var x = workArea.Right - Bounds.Width - 20;
-                var y = workArea.Bottom - Bounds.Height - 10;
-                Position = new PixelPoint((int)x, (int)y);
+
+                var scaling = Screens.Primary.Scaling;
+
+                var physicalHeight = this.Bounds.Height * scaling;
+
+                var y = workArea.Bottom - physicalHeight - (10 * scaling);
+                var x = workArea.Right - (this.Bounds.Width * scaling) - (20 * scaling);
+
+                this.Position = new PixelPoint((int)x, (int)y);
             }
         }
 
