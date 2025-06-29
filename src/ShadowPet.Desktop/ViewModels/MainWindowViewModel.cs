@@ -5,6 +5,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NuGet.Versioning;
 using ShadowPet.Core.Models;
@@ -47,7 +48,7 @@ namespace ShadowPet.Desktop.ViewModels
         private PixelPoint _currentPosition;
         private PixelPoint _targetPosition;
         private const double MoveSpeed = 0.05;
-
+        private SettingsView? _settingsView;
         [ObservableProperty]
         private CroppedBitmap? _petSprite;
 
@@ -135,8 +136,20 @@ namespace ShadowPet.Desktop.ViewModels
 
         private void OpenSettings()
         {
-            DialogueText = "La configuración aún no está lista. ¡Paciencia!";
-            IsDialogueVisible = true;
+            if (_settingsView != null)
+            {
+                _settingsView.Activate();
+                return;
+            }
+
+            _settingsView = new SettingsView
+            {
+                DataContext = Program.ServiceProvider!.GetRequiredService<SettingsViewModel>()
+            };
+
+            _settingsView.Closed += (sender, args) => _settingsView = null;
+
+            _settingsView.Show();
         }
 
         private void QuitApplication()

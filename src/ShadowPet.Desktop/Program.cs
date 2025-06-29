@@ -67,6 +67,7 @@ sealed class Program
 
         // ViewModels
         services.AddTransient<MainWindowViewModel>();
+        services.AddTransient<SettingsViewModel>();
         services.AddTransient<HomeViewModel>();
         services.AddTransient<UpdateViewModel>();
     }
