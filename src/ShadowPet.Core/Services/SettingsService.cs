@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
 using ShadowPet.Core.Models;
+using ShadowPet.Core.Utils;
 
 namespace ShadowPet.Core.Services
 {
@@ -26,7 +27,14 @@ namespace ShadowPet.Core.Services
             }
 
             var json = File.ReadAllText(_settingsPath);
-            return JsonConvert.DeserializeObject<AppSettings>(json) ?? new AppSettings();
+            var settings = JsonConvert.DeserializeObject<AppSettings>(json) ?? new AppSettings();
+
+            foreach (var action in settings.PetActions.Where(a => a.ProgramType == SupportedProgram.Unknown))
+            {
+                action.ProgramType = ProgramDetector.DetectProgramType(action.ProgramPath);
+            }
+
+            return settings;
         }
 
         public void SaveSettings(AppSettings settings)

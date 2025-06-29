@@ -3,7 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Services;
+using ShadowPet.Core.Utils;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 namespace ShadowPet.Desktop.Services
@@ -23,12 +25,14 @@ namespace ShadowPet.Desktop.Services
         private readonly SettingsService _settingsService;
         private readonly ProcessService _processService;
         private readonly AnnoyingMessagesService _annoyingMessagesService;
+        private readonly ProgramMessagesService _programMessagesService;
 
-        public PetBehaviorService(SettingsService settingsService, ProcessService processService, AnnoyingMessagesService annoyingMessagesService)
+        public PetBehaviorService(SettingsService settingsService, ProcessService processService, AnnoyingMessagesService annoyingMessagesService, ProgramMessagesService programMessagesService)
         {
             _settingsService = settingsService;
             _processService = processService;
             _annoyingMessagesService = annoyingMessagesService;
+            _programMessagesService = programMessagesService;
             _behaviorTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(5),
@@ -119,11 +123,23 @@ namespace ShadowPet.Desktop.Services
 
             var action = possibleActions[_random.Next(possibleActions.Count)];
 
-            var allMessages = _annoyingMessagesService.GetAllMessages();
+            if (action.ProgramType == SupportedProgram.Unknown)
+            {
+                action.ProgramType = ProgramDetector.DetectProgramType(action.ProgramPath);
+            }
 
-            var message = allMessages[_random.Next(allMessages.Count)];
+            string message;
+            if (action.ProgramType == SupportedProgram.Notepad)
+            {
+                var allMessages = _annoyingMessagesService.GetAllMessages();
+                message = allMessages[_random.Next(allMessages.Count)];
+            }
+            else
+            {
+                message = _programMessagesService.GetRandomMessageForProgram(action);
+            }
 
-            await OnDialogueRequested?.Invoke($"¡Je, je! ¿Qué tal una nota?");
+            await OnDialogueRequested?.Invoke("¡Je, je! ¿Qué tal un poco de diversión?");
             await OnAnimationChangeRequested?.Invoke("take_item_intro");
             await Task.Delay(1500);
 
@@ -132,7 +148,7 @@ namespace ShadowPet.Desktop.Services
                 await OnAnimationChangeRequested?.Invoke("take_item_loop");
                 await Task.Delay(2000);
 
-                _processService.StartProcessWithText(action.ProgramPath, message);
+                _processService.StartProgram(action, message);
 
                 await Task.Delay(1000);
             }

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Services;
+using ShadowPet.Core.Utils;
 using ShadowPet.Desktop.Services;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -61,7 +62,7 @@ namespace ShadowPet.Desktop.ViewModels
             _settingsService.SaveSettings(settings);
             _windowsStartupService.SetStartup(settings.StartWithWindows);
         }
-        
+
         [RelayCommand]
         private async Task AddAction(Window? owner)
         {
@@ -69,7 +70,7 @@ namespace ShadowPet.Desktop.ViewModels
 
             var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
-                Title = "Selecciona una wea",
+                Title = "Selecciona un programa",
                 AllowMultiple = false,
                 FileTypeFilter = [FilePickerFileTypes.All]
             });
@@ -83,6 +84,7 @@ namespace ShadowPet.Desktop.ViewModels
                     {
                         Name = Path.GetFileNameWithoutExtension(filePath),
                         ProgramPath = filePath,
+                        ProgramType = ProgramDetector.DetectProgramType(filePath)
                     };
                     PetActions.Add(newAction);
                 }
