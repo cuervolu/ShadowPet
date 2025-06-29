@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using System;
 
 namespace ShadowPet.Desktop.Views
@@ -16,25 +17,28 @@ namespace ShadowPet.Desktop.Views
         {
             base.OnOpened(e);
 
-            if (Screens.Primary != null)
+            Dispatcher.UIThread.Post(() =>
             {
-                var workArea = Screens.Primary.WorkingArea;
+                if (Screens.Primary != null)
+                {
+                    var workArea = Screens.Primary.WorkingArea;
+                    var scaling = this.Screens.Primary.Scaling;
 
-                var scaling = Screens.Primary.Scaling;
+                    var finalHeight = this.Bounds.Height;
+                    var finalWidth = this.Bounds.Width;
 
-                var physicalHeight = this.Bounds.Height * scaling;
+                    var y = workArea.Bottom - (finalHeight * scaling) - (10 * scaling);
+                    var x = workArea.Right - (finalWidth * scaling) - (20 * scaling);
 
-                var y = workArea.Bottom - physicalHeight - (10 * scaling);
-                var x = workArea.Right - (this.Bounds.Width * scaling) - (20 * scaling);
-
-                this.Position = new PixelPoint((int)x, (int)y);
-            }
+                    this.Position = new PixelPoint((int)x, (int)y);
+                }
+            }, DispatcherPriority.Background);
         }
 
-        private void Window_LostFocus(object? sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        // private void Window_LostFocus(object? sender, RoutedEventArgs e)
+        // {
+        //     Close();
+        // }
 
         private void CloseButton_Click(object? sender, RoutedEventArgs e)
         {

@@ -24,56 +24,87 @@
         <Setter Property="Foreground" Value="#209cee"/>
     </Style>
 
-    <Style Selector="Button.nes-btn">
+   <Style Selector="Button.nes-btn">
         <Setter Property="Foreground" Value="White" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="Background" Value="#209cee" /> <Setter Property="FontSize" Value="10" />
         <Setter Property="Padding" Value="12,8" />
-        <Setter Property="BorderThickness" Value="4" />
-        <Setter Property="BorderBrush" Value="Black" />
-        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="BorderThickness" Value="0" /> <Setter Property="CornerRadius" Value="0" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="Effect">
-            <DropShadowEffect OffsetX="4" OffsetY="4" BlurRadius="0" Color="Black" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="Black"
+                        BorderThickness="4"
+                        Padding="{TemplateBinding Padding}">
+                    <Border.Effect>
+                        <DropShadowEffect OffsetX="4" OffsetY="4" BlurRadius="0" Color="Black" />
+                    </Border.Effect>
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                </Border>
+            </ControlTemplate>
         </Setter>
     </Style>
 
-    <Style Selector="Button.nes-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-        <Setter Property="Background" Value="{Binding $parent[Button].Background}" />
+    <Style Selector="Button.nes-btn:pointerover /template/ Border">
+        <Setter Property="Background" Value="#1483c2" />
     </Style>
 
-    <Style Selector="Button.nes-btn.is-primary">
-        <Setter Property="Background" Value="#28a745" />
-    </Style>
-    <Style Selector="Button.nes-btn.is-primary:pointerover">
-        <Setter Property="Background" Value="#218838" />
-    </Style>
-
-    <Style Selector="Button.nes-btn.is-error">
-        <Setter Property="Background" Value="#e74c3c" />
-    </Style>
-    <Style Selector="Button.nes-btn.is-error:pointerover">
-        <Setter Property="Background" Value="#c0392b" />
-    </Style>
-
-    <Style Selector="Button.nes-btn.is-warning">
-        <Setter Property="Background" Value="#f0ad4e" />
-    </Style>
-    <Style Selector="Button.nes-btn.is-warning:pointerover">
-        <Setter Property="Background" Value="#ec971f" />
-    </Style>
-
-    <Style Selector="Button.nes-btn:pressed">
-        <Setter Property="Effect">
-            <DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="0" Color="Black" />
-        </Setter>
-        <Setter Property="RenderTransform">
+    <Style Selector="Button.nes-btn:pressed /template/ Border">
+        <Setter Property="Effect" Value="{x:Null}" /> <Setter Property="RenderTransform">
             <TranslateTransform X="4" Y="4" />
         </Setter>
     </Style>
 
+    <Style Selector="Button.nes-btn.is-primary /template/ Border">
+        <Setter Property="Background" Value="#28a745" />
+    </Style>
+    <Style Selector="Button.nes-btn.is-primary:pointerover /template/ Border">
+        <Setter Property="Background" Value="#218838" />
+    </Style>
+
+    <Style Selector="Button.nes-btn.is-error /template/ Border">
+        <Setter Property="Background" Value="#e74c3c" />
+    </Style>
+    <Style Selector="Button.nes-btn.is-error:pointerover /template/ Border">
+        <Setter Property="Background" Value="#c0392b" />
+    </Style>
+
+    <Style Selector="Button.nes-btn.is-warning /template/ Border">
+        <Setter Property="Background" Value="#f0ad4e" />
+    </Style>
+    <Style Selector="Button.nes-btn.is-warning:pointerover /template/ Border">
+        <Setter Property="Background" Value="#ec971f" />
+    </Style>
+
+    <Style Selector="CheckBox">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="CornerRadius" Value="0"/>
+    </Style>
+
+    <Style Selector="CheckBox:unchecked /template/ Border#PART_CheckMarkContainer">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="Black"/>
+        <Setter Property="CornerRadius" Value="0"/>
+    </Style>
+
+    <Style Selector="CheckBox:checked /template/ Border#PART_CheckMarkContainer">
+        <Setter Property="Background" Value="Black"/>
+    </Style>
+
+    <Style Selector="CheckBox:checked /template/ Path#PART_CheckGlyph">
+        <Setter Property="IsVisible" Value="False"/>
+    </Style>
+
     <Style Selector="CheckBox TextBlock">
         <Setter Property="FontSize" Value="9" />
+        <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
     <Style Selector="Slider">

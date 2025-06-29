@@ -5,70 +5,53 @@
         x:DataType="vm:HomeViewModel"
         Icon="/Assets/icon.ico"
         Title="Bienvenido a Shadow Pet"
-        Width="650" Height="550"
+        Width="600" Height="480"
         CanResize="False"
-        WindowStartupLocation="CenterScreen"
-        SystemDecorations="Full"
-        FontFamily="{StaticResource PressStart2P}">
-    <Grid>
-        <!-- Fondo con gradiente -->
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Color="#667eea" Offset="0.0" />
-                <GradientStop Color="#764ba2" Offset="1.0" />
-            </LinearGradientBrush>
-        </Grid.Background>
+        WindowStartupLocation="CenterScreen">
 
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
-            <!-- Contenedor del Título -->
-            <Border Classes="nes-container">
-                <StackPanel Orientation="Vertical" Spacing="5" HorizontalAlignment="Center">
-                    <TextBlock Text="¡Dale la bienvenida a tu nueva"
-                               FontSize="12" TextWrapping="Wrap" TextAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
-                        <TextBlock Text="maldicion"
-                                   TextDecorations="Strikethrough"
-                                   Foreground="#dc3545"
-                                   FontSize="12"/>
-                        <TextBlock Text="mascota!"
-                                   FontSize="12"/>
-                    </StackPanel>
+    <Grid Margin="40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="25">
+
+            <StackPanel Spacing="5" HorizontalAlignment="Center">
+                <TextBlock Text="¡Dale la bienvenida a tu nueva"
+                           FontSize="24" FontWeight="Light" TextAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                    <TextBlock Text="maldición"
+                               TextDecorations="Strikethrough"
+                               FontSize="24" FontWeight="SemiBold" Opacity="0.7"/>
+                    <TextBlock Text="mascota!"
+                               FontSize="24" FontWeight="SemiBold"/>
                 </StackPanel>
-            </Border>
+            </StackPanel>
 
-            <!-- Contenedor de la Descripción -->
-            <Border Classes="nes-container">
-                <StackPanel Spacing="15" MaxWidth="500">
-                    <TextBlock Text="Es el protagonista de la novela Yaoi... digo digo, un antagonista de Cookie Run Kingdom y ahora sera TU problema."
-                               FontSize="9" TextWrapping="Wrap" LineHeight="18" TextAlignment="Center"/>
-                    <TextBlock Text="Camina, habla, y mas weas que me dan paja describir, averigualo dando click en este boton para ver nacer a esta bestia!"
-                               FontSize="9" TextWrapping="Wrap" LineHeight="18" TextAlignment="Center"/>
-                </StackPanel>
-            </Border>
+            <TextBlock TextAlignment="Center" TextWrapping="Wrap" MaxWidth="500" Opacity="0.8">
+                Es el protagonista de la novela Yaoi... digo digo, un antagonista de Cookie Run Kingdom y ahora será TU problema.
+                Camina, habla, y más cosas que da pereza describir. ¡Averígualo y libera a esta bestia!
+            </TextBlock>
 
-            <!-- Botón Principal -->
             <Button Content="🍪 ¡Liberar a Shadow Milk Cookie! 🍪"
-                    Classes="nes-btn is-primary"
+                    Classes="primary"
                     Command="{Binding StartPetCommand}"
-                    HorizontalAlignment="Center"/>
+                    HorizontalAlignment="Center"
+                    Padding="20,10"/>
 
-            <!-- Opciones -->
             <CheckBox IsChecked="{Binding StartWithSystem}"
                       Command="{Binding ToggleStartWithSystemCommand}"
                       CommandParameter="{Binding $self.IsChecked}"
-                      HorizontalAlignment="Center">
-                <TextBlock Text="Iniciar con el sistema (para sufrir desde el boot)"
-                           FontSize="9"
-                           Foreground="White"/>
-            </CheckBox>
+                      HorizontalAlignment="Center"
+                      Content="Iniciar con el sistema (para sufrir desde el boot)"/>
+
         </StackPanel>
 
-        <!-- Footer -->
-        <TextBlock Text="Hecho con ❤️ por Cuervolu"
-                   FontSize="8"
-                   Foreground="White"
+        <TextBlock Grid.Row="1" Text="Hecho con ❤️ por Cuervolu"
+                   FontSize="12"
+                   Opacity="0.5"
                    HorizontalAlignment="Center"
-                   VerticalAlignment="Bottom"
-                   Margin="20"/>
+                   VerticalAlignment="Bottom"/>
     </Grid>
 </Window>

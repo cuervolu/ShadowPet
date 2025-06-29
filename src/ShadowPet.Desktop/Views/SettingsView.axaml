@@ -1,80 +1,76 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:ShadowPet.Desktop.ViewModels"
-        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-        mc:Ignorable="d" d:DesignWidth="380" d:DesignHeight="600"
         x:Class="ShadowPet.Desktop.Views.SettingsView"
         x:DataType="vm:SettingsViewModel"
         Icon="/Assets/icon.ico"
-        Title="Configuracion"
-        SystemDecorations="None" ShowInTaskbar="False" CanResize="False"
-        SizeToContent="Height" Width="380"
-        Background="Transparent"
-        FontFamily="{StaticResource PressStart2P}"
-        LostFocus="Window_LostFocus">
+        Title="Configuración"
+        CanResize="False"
+        SizeToContent="Height"
+        Width="380">
 
-    <Border Classes="nes-container">
-        <StackPanel Spacing="5">
-            <TextBlock Text="Configuracion" FontSize="16" FontWeight="Bold"
-                       HorizontalAlignment="Center" />
+    <Border Padding="15">
+        <StackPanel Spacing="10">
+            <TextBlock Text="Configuración" FontSize="18" FontWeight="SemiBold"
+                       HorizontalAlignment="Center" Margin="0,0,0,10" />
 
-            <!-- General -->
-            <TextBlock Text="General" Classes="Header" />
-            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                <TextBlock Text="Iniciar con Windows" VerticalAlignment="Center" FontSize="9" />
-                <CheckBox Grid.Column="1" IsChecked="{Binding StartWithWindows}" />
-            </Grid>
-            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                <TextBlock Text="Permitir notificaciones" VerticalAlignment="Center" FontSize="9" />
-                <CheckBox Grid.Column="1" IsChecked="{Binding AllowNotifications}" />
+            <TextBlock Text="General" FontWeight="Bold" Margin="0,10,0,5" />
+
+            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" VerticalAlignment="Center" RowSpacing="10">
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Iniciar con Windows" VerticalAlignment="Center" />
+                <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding StartWithWindows}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Permitir notificaciones" VerticalAlignment="Center" />
+                <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding AllowNotifications}" />
             </Grid>
 
-            <!-- Comportamiento -->
-            <TextBlock Text="Comportamiento" Classes="Header" />
-            <TextBlock Text="Nivel de Molestia" FontSize="9" />
+            <TextBlock Text="Comportamiento" FontWeight="Bold" Margin="0,15,0,5" />
+
+            <TextBlock Text="Nivel de Molestia" />
             <Slider Minimum="0" Maximum="100" Value="{Binding AnnoyanceLevel}" />
 
-            <TextBlock Text="Volumen de Sonido" FontSize="9" />
+            <TextBlock Text="Volumen de Sonido" Margin="0,10,0,0" />
             <Slider Minimum="0" Maximum="100" Value="{Binding SoundVolume}" />
 
-            <!-- Programas -->
-            <TextBlock Text="Programas" Classes="Header" />
-            <TextBlock Text="Shadow puede iniciar estos programas al azar:" TextWrapping="Wrap"
-                       FontSize="8" LineHeight="14" />
-            <Border BorderBrush="Black" BorderThickness="4" Margin="0,10,0,0" MaxHeight="110"
-                    Background="#dedede">
-                <ScrollViewer>
-                    <ItemsControl ItemsSource="{Binding AllowedPrograms}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="sys:String">
-                                <Grid ColumnDefinitions="*,Auto" Margin="8,4">
-                                    <TextBlock Text="{Binding}" VerticalAlignment="Center"
-                                               TextTrimming="CharacterEllipsis" FontSize="9" />
-                                    <Button Grid.Column="1"
-                                            Content="X"
-                                            Classes="nes-btn is-error"
-                                            Command="{Binding $parent[Window].DataContext.RemoveProgramCommand}"
-                                            CommandParameter="{Binding}"
-                                            Padding="8,4"
-                                            FontSize="8" />
-                                </Grid>
+            <TextBlock Text="Programas" FontWeight="Bold" Margin="0,15,0,5" />
+            <TextBlock Text="Shadow puede iniciar estos programas al azar:" TextWrapping="Wrap" FontSize="12" Opacity="0.7"/>
+
+            <DataGrid ItemsSource="{Binding AllowedPrograms}"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="False"
+                      CanUserSortColumns="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="None"
+                      BorderThickness="1"
+                      Height="120"
+                      Margin="0,10,0,0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Programa" Binding="{Binding}" Width="*" />
+
+                    <DataGridTemplateColumn Width="SizeToCells">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Eliminar"
+                                        Margin="5"
+                                        Command="{Binding $parent[Window].DataContext.RemoveProgramCommand}"
+                                        CommandParameter="{Binding}"/>
                             </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </Border>
-            <Button Content="Añadir Programa" Classes="nes-btn"
-                    Command="{Binding AddProgramCommand}" HorizontalAlignment="Stretch"
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <Button Content="Añadir Programa"
+                    Command="{Binding AddProgramCommand}"
+                    HorizontalAlignment="Stretch"
                     Margin="0,8,0,0" />
 
-            <!-- Footer -->
-            <Separator Margin="0,20,0,10" Background="Black" Height="4" />
+            <Separator Margin="0,20,0,10" />
+
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-                <Button Content="Reset" Classes="nes-btn is-warning"
+                <Button Content="Reset"
                         Command="{Binding ResetSettingsCommand}" />
-                <Button Content="Guardar" IsDefault="True" Classes="nes-btn is-primary"
+                <Button Content="Guardar" IsDefault="True"
                         Command="{Binding SaveSettingsCommand}" Click="CloseButton_Click" />
             </StackPanel>
         </StackPanel>

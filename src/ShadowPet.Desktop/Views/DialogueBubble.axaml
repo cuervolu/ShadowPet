@@ -1,14 +1,29 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="50"
              x:Class="ShadowPet.Desktop.Views.DialogueBubble"
-             x:Name="This">
-    <Border Background="#2E2E3A" CornerRadius="8" Padding="12" BorderThickness="1.5" BorderBrush="#505060">
-        <TextBlock Text="{Binding #This.Text}"
-                   Foreground="#E0E0E0"
-                   TextWrapping="Wrap"
-                   TextAlignment="Center"/>
-    </Border>
+             x:Name="This"
+             MaxWidth="250">
+
+    <Grid>
+        <Border Background="{DynamicResource SemiColorBackground1}"
+                CornerRadius="{DynamicResource SemiBorderRadiusMedium}"
+                Padding="{DynamicResource SemiThicknessBase}"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource SemiColorBorder}"
+                BoxShadow="{DynamicResource SemiShadowElevated}"> <TextBlock Text="{Binding #This.Text}"
+                Foreground="{DynamicResource SemiColorText0}"
+                TextWrapping="Wrap"
+                TextAlignment="Center"/>
+        </Border>
+
+        <Path Fill="{DynamicResource SemiColorBackground1}"
+              Stroke="{DynamicResource SemiColorBorder}"
+              StrokeThickness="1"
+              Width="20" Height="10"
+              Stretch="Fill"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Bottom"
+              Margin="0,-1,0,-9"
+              Data="M 0 0 L 10 10 L 20 0 Z" />
+    </Grid>
 </UserControl>

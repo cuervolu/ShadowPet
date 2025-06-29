@@ -2,33 +2,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ShadowPet.Desktop.ViewModels"
         xmlns:views="using:ShadowPet.Desktop.Views"
+        xmlns:converters="clr-namespace:ShadowPet.Desktop.Converters"
         x:Class="ShadowPet.Desktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/icon.ico"
+        Title="Shadow Pet"
+        Height="150" Width="150"
+        Topmost="True"
         SystemDecorations="None"
         Background="Transparent"
         WindowStartupLocation="CenterScreen"
         CanResize="False"
         ShowInTaskbar="False"
-        Topmost="True"
-        Width="200"
-        Height="200"
-        FontFamily="{DynamicResource PressStart2P}"
-        Icon="/Assets/icon.ico"
-        Title="Shadow Pet">
+        SizeToContent="WidthAndHeight">
 
-    <Grid RowDefinitions="Auto, *">
+    <Window.Resources>
+        <converters:RelativeTranslateConverter x:Key="RelativeTranslate" />
+    </Window.Resources>
 
-        <views:DialogueBubble Grid.Row="0"
-                              IsVisible="{Binding IsDialogueVisible}"
-                              Text="{Binding DialogueText}" MaxWidth="180"
-                              HorizontalAlignment="Center"
-                              Margin="0,0,0,5" />
-        <Image Grid.Row="1"
-               Name="PetSprite"
+    <Canvas>
+        <Image Width="150" Height="150"
                Source="{Binding PetSprite}"
-               VerticalAlignment="Center"
-               HorizontalAlignment="Center" />
+               Stretch="Uniform"/>
 
-    </Grid>
-
+        <views:DialogueBubble
+            x:Name="DialogueBubble"
+            IsVisible="{Binding IsDialogueVisible}"
+            Text="{Binding DialogueText}"
+            Canvas.Left="75"
+            Canvas.Top="-100">
+            <views:DialogueBubble.RenderTransform>
+                <TranslateTransform
+                    X="{Binding #DialogueBubble.Bounds.Width, Converter={StaticResource RelativeTranslate}, ConverterParameter='-0.5'}" />
+            </views:DialogueBubble.RenderTransform>
+        </views:DialogueBubble>
+    </Canvas>
 </Window>
