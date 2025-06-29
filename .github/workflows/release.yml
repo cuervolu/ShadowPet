@@ -26,15 +26,14 @@ jobs:
 
       - name: Get version from tag
         id: get_version
-        # Extrae la versión del tag (ej. de 'v1.0.1' obtiene '1.0.1')
-        run: echo "version=${{ github.ref_name }}" | sed 's/v//' >> $env:GITHUB_OUTPUT
+        run: echo "version=$(echo ${{ github.ref_name }} | sed 's/^v//')" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Install vpk tool
         run: dotnet tool install -g vpk
 
       - name: Create Velopack Release
-        run: vpk pack -u ShadowPet -v ${{ steps.get_version.outputs.version }} -p .\publish -o .\Releases -e ShadowPet.exe
+        run: vpk pack --packageId ShadowPet --packageVersion ${{ steps.get_version.outputs.version }} --packDir ".\publish" --outputDir ".\Releases" --mainExe ShadowPet.exe
 
       - name: Upload Artifacts to GitHub Release
         uses: softprops/action-gh-release@v2
