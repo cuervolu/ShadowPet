@@ -33,7 +33,7 @@ jobs:
         run: dotnet tool install -g vpk
 
       - name: Create Velopack Release
-        run: vpk pack --packageId ShadowPet --packageVersion ${{ steps.get_version.outputs.version }} --packDir ".\publish" --outputDir ".\Releases" --mainExe ShadowPet.exe
+        run: vpk pack -u ShadowPet -v ${{ steps.get_version.outputs.version }} -p .\publish -o .\Releases -e ShadowPet.exe
 
       - name: Upload Artifacts to GitHub Release
         uses: softprops/action-gh-release@v2
