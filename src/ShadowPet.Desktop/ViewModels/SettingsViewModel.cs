@@ -33,9 +33,10 @@ namespace ShadowPet.Desktop.ViewModels
 
         public ObservableCollection<PetAction> PetActions { get; }
 
-        public SettingsViewModel(SettingsService settingsService)
+        public SettingsViewModel(SettingsService settingsService, WindowsStartupService windowsStartupService)
         {
             _settingsService = settingsService;
+            _windowsStartupService = windowsStartupService;
             var settings = _settingsService.LoadSettings();
 
             _startWithWindows = settings.StartWithWindows;
