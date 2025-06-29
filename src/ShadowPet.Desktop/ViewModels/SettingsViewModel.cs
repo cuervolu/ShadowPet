@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Services;
+using ShadowPet.Desktop.Services;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace ShadowPet.Desktop.ViewModels
     public partial class SettingsViewModel : ViewModelBase
     {
         private readonly SettingsService _settingsService;
-        private readonly AnnoyingMessagesService _annoyingMessagesService;
+        private readonly WindowsStartupService _windowsStartupService;
         [ObservableProperty]
         private bool _startWithWindows;
 
@@ -32,10 +33,9 @@ namespace ShadowPet.Desktop.ViewModels
 
         public ObservableCollection<PetAction> PetActions { get; }
 
-        public SettingsViewModel(SettingsService settingsService, AnnoyingMessagesService annoyingMessagesService)
+        public SettingsViewModel(SettingsService settingsService)
         {
             _settingsService = settingsService;
-            _annoyingMessagesService = annoyingMessagesService;
             var settings = _settingsService.LoadSettings();
 
             _startWithWindows = settings.StartWithWindows;
@@ -58,6 +58,7 @@ namespace ShadowPet.Desktop.ViewModels
                 PetActions = PetActions.ToList()
             };
             _settingsService.SaveSettings(settings);
+            _windowsStartupService.SetStartup(settings.StartWithWindows);
         }
         
         [RelayCommand]

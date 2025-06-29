@@ -1,74 +1,51 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:ShadowPet.Desktop.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
         x:Class="ShadowPet.Desktop.Views.UpdateView"
         x:DataType="vm:UpdateViewModel"
-        Title="¡Actualizacion Disponible!"
+        Title="¡Actualización Disponible!"
         Icon="/Assets/icon.ico"
-        Width="600" Height="450"
+        Width="550" Height="500"
         CanResize="False"
-        WindowStartupLocation="CenterScreen"
-        SystemDecorations="None"
-        Background="Transparent"
-        TransparencyLevelHint="AcrylicBlur">
+        WindowStartupLocation="CenterScreen">
 
-    <Window.Styles>
-        <Style Selector="Button.nes-btn">
-            <Setter Property="FontFamily" Value="{StaticResource PressStart2P}" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderThickness" Value="2" />
-            <Setter Property="BorderBrush" Value="White" />
-            <Setter Property="CornerRadius" Value="0" />
-            <Setter Property="Padding" Value="12,10" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-        </Style>
-        <Style Selector="Button.nes-btn.is-primary">
-            <Setter Property="Background" Value="#28a745" />
-        </Style>
-        <Style Selector="Button.nes-btn.is-small">
-            <Setter Property="Background" Value="#6c757d" />
-            <Setter Property="FontSize" Value="10" />
-        </Style>
-        <Style Selector="Button.nes-btn:pointerover">
-            <Setter Property="Opacity" Value="0.85" />
-        </Style>
-    </Window.Styles>
+    <Grid Margin="25" RowDefinitions="Auto,Auto,*,Auto">
 
-    <Border Background="#212529" CornerRadius="8" Padding="1" BorderThickness="2" BorderBrush="#495057">
-        <Grid RowDefinitions="Auto,*,Auto" Margin="15">
-            <TextBlock Grid.Row="0"
-                       Text="ACTUALIZA AWEONAO"
-                       Foreground="White"
-                       FontSize="16"
-                       HorizontalAlignment="Center"
-                       FontFamily="{StaticResource PressStart2P}"
-                       Margin="0,0,0,15"/>
+        <StackPanel Grid.Row="0" Margin="0,0,0,15" HorizontalAlignment="Center" Spacing="5">
+            <TextBlock Text="ACTUALIZA AWEONAO"
+                       FontSize="20" FontWeight="Bold"
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding NewVersion, StringFormat='Nueva versión encontrada: {0}'}"
+                       FontSize="14" Opacity="0.7"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
 
-            <StackPanel Grid.Row="1" Orientation="Vertical" Spacing="20" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image Source="/Assets/updater.webp" Width="150" RenderOptions.BitmapInterpolationMode="None"/>
+        <Image Grid.Row="1" Source="/Assets/updater.webp" Width="120" Margin="0,0,0,15"
+               RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
-                <Border BorderBrush="White" BorderThickness="2" Padding="10">
-                    <Grid RowDefinitions="Auto,*">
-                        <TextBlock Grid.Row="0" Text="Release Notes" FontFamily="{StaticResource PressStart2P}" FontSize="12" Foreground="White" Margin="0,0,0,10"/>
-                        <ScrollViewer Grid.Row="1" MaxHeight="100">
-                            <TextBlock Text="{Binding ReleaseNotes}"
-                                       Foreground="White"
-                                       FontSize="10"
-                                       TextWrapping="Wrap"
-                                       FontFamily="Courier New, monospace"/>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-            </StackPanel>
+        <Border Grid.Row="2"
+                BorderThickness="1"
+                BorderBrush="{DynamicResource SemiColorBorder}"
+                CornerRadius="{DynamicResource SemiBorderRadiusMedium}"
+                Padding="15">
+            <ScrollViewer>
+                <TextBlock Text="{Binding ReleaseNotes}"
+                           TextWrapping="Wrap"
+                           FontFamily="monospace"/>
+            </ScrollViewer>
+        </Border>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="20" HorizontalAlignment="Right" Margin="0,20,0,0">
-                <Button Content="Saltar esta version" Classes="nes-btn is-small" Command="{Binding SkipCommand}"/>
-                <Button Content="Actualizar Ahora" Classes="nes-btn is-primary" Command="{Binding UpdateCommand}"/>
-            </StackPanel>
-        </Grid>
-    </Border>
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    Spacing="10"
+                    HorizontalAlignment="Right"
+                    Margin="0,20,0,0">
+            <Button Content="Saltar esta versión"
+                    Command="{Binding SkipCommand}"/>
+
+            <Button Content="Actualizar Ahora"
+                    IsDefault="True"
+                    Command="{Binding UpdateCommand}"/>
+        </StackPanel>
+    </Grid>
 </Window>
