@@ -14,7 +14,7 @@
     <PackageId>dev.cuervolu.ShadowPet</PackageId>
     <Title>Shadow Pet</Title>
     <Authors>Cuervolu</Authors>
-    <Version>0.0.1</Version>
+    <Version>0.0.3</Version>
     <Description>Un companero de escritorio no solicitado.</Description>
     <Copyright>Copyright 2025</Copyright>
     <PackageIcon>Assets\icon.ico</PackageIcon>
