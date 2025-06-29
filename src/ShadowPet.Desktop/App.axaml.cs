@@ -7,6 +7,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Microsoft.Extensions.DependencyInjection;
+using ShadowPet.Core.Services;
 using ShadowPet.Desktop.ViewModels;
 using ShadowPet.Desktop.Views;
 using System;
@@ -20,34 +21,53 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+      public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             DisableAvaloniaDataAnnotationValidation();
 
-            var homeViewModel = Program.ServiceProvider!.GetRequiredService<HomeViewModel>();
+            var settingsService = Program.ServiceProvider!.GetRequiredService<SettingsService>();
+            var settings = settingsService.LoadSettings();
 
-            var homeView = new HomeView
-            {
-                DataContext = homeViewModel
-            };
-            desktop.MainWindow = homeView;
-
-            homeViewModel.StartPetRequested += () =>
+            if (settings.HasRunBefore)
             {
                 var mainWindowViewModel = Program.ServiceProvider!.GetRequiredService<MainWindowViewModel>();
                 var mainWindow = new MainWindow
                 {
                     DataContext = mainWindowViewModel
                 };
-
                 ConfigureTrayIcon(mainWindowViewModel);
-
+                desktop.MainWindow = mainWindow;
                 mainWindow.Show();
+            }
+            else
+            {
+                var homeViewModel = Program.ServiceProvider!.GetRequiredService<HomeViewModel>();
+                var homeView = new HomeView
+                {
+                    DataContext = homeViewModel
+                };
+                desktop.MainWindow = homeView;
 
-                homeView.Close();
-            };
+                homeView.Show();
+
+                homeViewModel.StartPetRequested += () =>
+                {
+                    settings.HasRunBefore = true;
+                    settingsService.SaveSettings(settings);
+
+                    var mainWindowViewModel = Program.ServiceProvider!.GetRequiredService<MainWindowViewModel>();
+                    var mainWindow = new MainWindow
+                    {
+                        DataContext = mainWindowViewModel
+                    };
+
+                    ConfigureTrayIcon(mainWindowViewModel);
+                    mainWindow.Show();
+                    homeView.Close();
+                };
+            }
         }
 
         base.OnFrameworkInitializationCompleted();

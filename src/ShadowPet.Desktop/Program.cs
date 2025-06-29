@@ -59,6 +59,7 @@ sealed class Program
 
         services.AddSingleton<UpdateService>();
         services.AddSingleton<AppPaths>();
+        services.AddSingleton<SettingsService>();
         services.AddSingleton<AnimationService>();
         services.AddSingleton<DialogueService>();
         services.AddSingleton<AudioService>();
