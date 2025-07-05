@@ -111,20 +111,50 @@ namespace ShadowPet.Desktop.ViewModels
             return await dialog.ShowDialog<bool>(new Window());
         }
 
-
-        // private async Task ShowFakeUpdateModalForTesting()
-        // {
-        //     await Task.Delay(500);
-        //
-        //     var fakeUpdateAsset = new VelopackAsset {
-        //         PackageId = "dev.cuervolu.ShadowPet",
-        //         Version = new SemanticVersion(1, 2, 3),
-        //         NotesMarkdown = "### Novedades\n\n- Se corrigio un bug que hacia que Shadow se robara tus contrasenas.\n- Ahora es 20% mas molesto.\n- Se anadieron mas dialogos sin sentido para que no te sientas solo."
-        //     };
-        //     var fakeUpdateInfo = new UpdateInfo(fakeUpdateAsset,false);
-        //
-        //     OnUpdateAvailable(fakeUpdateInfo);
-        // }
+//         private async Task ShowFakeUpdateModalForTesting()
+//         {
+//             await Task.Delay(500);
+//
+//             // El contenido completo de tu changelog.md
+//             var changelogContent = """
+//                                    ## **Shadow Pet: "¡Ahora Hago Más Cosas!"**
+//
+//                                    He estado trabajando arduamente (y bajo la atenta y caótica mirada de Shadow Milk Cookie) para traer una oleada de mejoras a tu mascota de escritorio favorita. Esto es todo lo nuevo:
+//
+//                                    ### **Mejoras de Calidad de Vida (Para que no desinstales la app y me pegues)**
+//
+//                                    -   **Implementado el Botón de "Por favor, para":** Se ha añadido una configuración crucial en la nueva pestaña de "Comportamiento". Ahora puedes desmarcar la casilla "Permitir que abra programas y URLs". Si lo haces, Shadow ya no abrirá cosas al azar. En su lugar, se quejará de vez en quando con un aire de decepción adorable.
+//                                    -   **Control de Volumen (Porque a veces grita):** En la pestaña "General", ahora hay un deslizador de "Volumen de Sonido". Úsalo para decidir si los susurros de Shadow son un murmullo de fondo o el evento principal de tu día.
+//                                    -   **Zona de Confort (Ya no se sale de la pantalla xd):** He puesto límites. Shadow ya no podrá esconderse cobardemente debajo de la barra de tareas o en los rincones más oscuros de tu monitor. Ahora se mantendrá siempre a la vista, quiera o no el ql.
+//
+//                                    ### **Shadow Ahora es Más Inteligente (O al menos, más personalizable)**
+//                                    -   **¿Qué tan caótico lo quieres?:** El deslizador "Nivel de Molestia" ahora _de verdad_ hace algo. Súbelo para que Shadow sea un torbellino de actividad, abriendo cosas y moviéndose sin parar. Bájalo para que entre en un estado de letargo casi productivo.
+//                                    -   **Guionista Personal:** ¿Cansado de que siempre pregunte por Vainilla? ¡Ahora puedes escribirle sus propios diálogos! En la nueva pestaña de "Personalización", tienes control total sobre su repertorio. Añade, elimina y haz que diga lo que siempre quisiste.
+//                                    -   **Modo Oscuro, porque somos programadores:** En la pestaña "General" puedes cambiar el tema de la aplicación entre Claro y Oscuro. Por defecto es oscuro, como el corazón de la galleta.
+//
+//                                    ### **La Gran Actualización de la Configuración**
+//
+//                                    -   **Adiós, ventanita esquinera:** La configuración ha madurado. Ya no es un pequeño panel que aparece en la esquina. Ahora es una ventana de verdad, con todas las de la ley, organizada en tres pestañas gloriosas: **General, Comportamiento y Personalización.**
+//
+//                                    -   **El Buscador de Programas Mágico:** Se acabó el tener que bucear en tus carpetas buscando un `.exe`. En la pestaña "Personalización", ahora solo tienes que escribir el nombre del programa (ej: `chrome.exe`), darle a "Buscar y Añadir", y nuestro nuevo y flamante `ProgramFinderService` hará el trabajo sucio.
+//
+//                                        -   **Búsqueda a tres niveles:** Primero mira en el registro (el lugar de los profesionales), luego en el PATH (el lugar de los valientes) y, si todo falla, se pone a escanear tus carpetas de `Program Files` como un becario desesperado.
+//                                        -   **A prueba de errores (casi):** El buscador ahora es lo suficientemente listo como para no morir si se encuentra con una carpeta a la que no tiene permiso de acceso. Simplemente la ignora y sigue con su vida.
+//                                        -   **Botón de Pánico (Cancelar):** Si la búsqueda se está demorando mucho, ahora hay un bonito botón rojo de "Cancelar" para que puedas detenerla. Y lo más importante: ahora sí funciona.
+//
+//                                    Espero que disfrutes de estas mejoras. He puesto mucho esfuerzo para que esta mascota sea el compañero de escritorio perfecto: adorable, un poco molesto y altamente personalizable.
+//                                    """;
+//
+//             var fakeUpdateAsset = new VelopackAsset
+//             {
+//                 PackageId = "dev.cuervolu.ShadowPet",
+//                 Version = new SemanticVersion(1, 2, 3),
+//                 NotesMarkdown = changelogContent
+//             };
+//             var fakeUpdateInfo = new UpdateInfo(fakeUpdateAsset, false);
+//
+//             OnUpdateAvailable(fakeUpdateInfo);
+//         }
 
 
         private async void OnUpdateAvailable(UpdateInfo updateInfo)

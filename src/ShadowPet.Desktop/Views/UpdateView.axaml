@@ -1,6 +1,7 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ShadowPet.Desktop.ViewModels"
+        xmlns:md="https://github.com/whistyun/Markdown.Avalonia"
         x:Class="ShadowPet.Desktop.Views.UpdateView"
         x:DataType="vm:UpdateViewModel"
         Title="¡Actualización Disponible!"
@@ -14,26 +15,33 @@
         <StackPanel Grid.Row="0" Margin="0,0,0,15" HorizontalAlignment="Center" Spacing="5">
             <TextBlock Text="ACTUALIZA AWEONAO"
                        FontSize="20" FontWeight="Bold"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center" />
             <TextBlock Text="{Binding NewVersion, StringFormat='Nueva versión encontrada: {0}'}"
                        FontSize="14" Opacity="0.7"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center" />
         </StackPanel>
 
         <Image Grid.Row="1" Source="/Assets/updater.webp" Width="120" Margin="0,0,0,15"
-               RenderOptions.BitmapInterpolationMode="HighQuality"/>
+               RenderOptions.BitmapInterpolationMode="HighQuality" />
 
         <Border Grid.Row="2"
                 BorderThickness="1"
                 BorderBrush="{DynamicResource SemiColorBorder}"
-                CornerRadius="{DynamicResource SemiBorderRadiusMedium}"
-                Padding="15">
-            <ScrollViewer>
-                <TextBlock Text="{Binding ReleaseNotes}"
-                           TextWrapping="Wrap"
-                           FontFamily="monospace"/>
-            </ScrollViewer>
+                CornerRadius="{DynamicResource SemiBorderRadiusMedium}">
+            <md:MarkdownScrollViewer Markdown="{Binding ReleaseNotes}">
+                <md:MarkdownScrollViewer.Styles>
+                    <Style Selector="md|MarkdownScrollViewer TextBlock.h1">
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                    </Style>
+                    <Style Selector="md|MarkdownScrollViewer TextBlock.h2">
+                        <Setter Property="Foreground"
+                                Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+                    </Style>
+                </md:MarkdownScrollViewer.Styles>
+            </md:MarkdownScrollViewer>
         </Border>
+
 
         <StackPanel Grid.Row="3"
                     Orientation="Horizontal"
@@ -41,11 +49,11 @@
                     HorizontalAlignment="Right"
                     Margin="0,20,0,0">
             <Button Content="Saltar esta versión"
-                    Command="{Binding SkipCommand}"/>
+                    Command="{Binding SkipCommand}" />
 
             <Button Content="Actualizar Ahora"
                     IsDefault="True"
-                    Command="{Binding UpdateCommand}"/>
+                    Command="{Binding UpdateCommand}" />
         </StackPanel>
     </Grid>
 </Window>
