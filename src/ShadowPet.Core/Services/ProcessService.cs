@@ -1,8 +1,7 @@
-﻿using System.Diagnostics;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Utils;
-
+using System.Diagnostics;
 namespace ShadowPet.Core.Services
 {
     public class ProcessService(
@@ -119,6 +118,19 @@ namespace ShadowPet.Core.Services
 
             Process.Start(processStartInfo);
             logger.LogInformation("Programa genérico iniciado: {Program}", Path.GetFileName(programPath));
+        }
+
+        public void OpenUrl(string url)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                logger.LogInformation("URL abierta con éxito: {Url}", url);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Falló al intentar abrir la URL {Url}", url);
+            }
         }
     }
 }

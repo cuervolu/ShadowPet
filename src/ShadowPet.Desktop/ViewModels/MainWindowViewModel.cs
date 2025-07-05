@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
@@ -77,6 +78,7 @@ namespace ShadowPet.Desktop.ViewModels
             _behaviorService.OnDialogueRequested += HandleDialogueRequest;
             _behaviorService.OnMoveRequested += HandleMoveRequest;
             _behaviorService.OnFollowMouseRequested += HandleFollowMouseRequest;
+            _behaviorService.OnConfirmationRequested += ShowConfirmationDialogAsync;
 
             DoTrickCommand = new RelayCommand(() => _behaviorService.TriggerSpecificAnimation("victoria_face"));
             OpenSettingsCommand = new RelayCommand(OpenSettings);
@@ -92,6 +94,23 @@ namespace ShadowPet.Desktop.ViewModels
 
             // ShowFakeUpdateModalForTesting();
         }
+
+
+        private async Task<bool> ShowConfirmationDialogAsync(string title, string message)
+        {
+            var dialog = new MessageBoxWindow(title, message);
+
+            var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            var owner = lifetime?.Windows.OfType<MainWindow>().FirstOrDefault();
+
+            if (owner != null)
+            {
+                return await dialog.ShowDialog<bool>(owner);
+            }
+
+            return await dialog.ShowDialog<bool>(new Window());
+        }
+
 
         // private async Task ShowFakeUpdateModalForTesting()
         // {

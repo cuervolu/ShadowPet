@@ -25,7 +25,9 @@ public class DialogueService
         "¡¿Dónde está mi VAINILLA?!",
         "Ya llegó por quién lloraban! ¡Aplaudan!",
         "¿Tienes alguna idea para quitar el aburrimiento?",
-        "Uuuuuh, tremendo chisme estoy viendo."
+        "Uuuuuh, tremendo chisme estoy viendo.",
+        "Hey niña, ¿quieres comprar lechuga?",
+        "Acabo de tener un sueño donde yo era Shadow Milk Cookie"
     };
 
     public string GetRandomDialogue()

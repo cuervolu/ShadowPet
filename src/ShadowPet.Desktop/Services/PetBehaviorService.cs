@@ -10,6 +10,7 @@ namespace ShadowPet.Desktop.Services
 {
     public class PetBehaviorService
     {
+        public event Func<string, string, Task<bool>>? OnConfirmationRequested;
         public event Func<string, Task>? OnAnimationChangeRequested;
         public event Func<string, Task>? OnDialogueRequested;
         public event Action? OnFollowMouseRequested;
@@ -59,28 +60,40 @@ namespace ShadowPet.Desktop.Services
             if (_isBusy || (CurrentState != PetState.Idle && CurrentState != PetState.Moving)) return;
 
             var settings = _settingsService.LoadSettings();
-            var choice = _random.Next(100);
+            var annoyance = settings.AnnoyanceLevel;
 
+            double takeItemChance;
             if (settings.AllowProgramExecution)
             {
-                if (choice < 15) await DemandAttention();
-                else if (choice < 30) await Speak();
-                else if (choice < 50) await MoveRandomly();
-                else if (choice < 65) await FollowMouse();
-                else if (choice < 80) await MakeSillyDance();
-                else if (choice < 95) await TakeItem(); // 15% of chance
+                takeItemChance = 5 + (annoyance / 100.0) * 25.0;
             }
             else
             {
-                if (choice < 20) await DemandAttention();
-                else if (choice < 40) await Speak();
-                else if (choice < 65) await MoveRandomly();
-                else if (choice < 80) await FollowMouse();
-                else if (choice < 95) await MakeSillyDance();
-                else if (choice < 98) await TakeItem(); // <-- Very low chance (3%)
+                takeItemChance = 1 + (annoyance / 100.0) * 3.0;
             }
 
-            _behaviorTimer.Interval = TimeSpan.FromSeconds(_random.Next(5, 12));
+            var openUrlChance = takeItemChance + (5 + (annoyance / 100.0) * 20.0);
+
+            var remainingChance = 100.0 - openUrlChance;
+            var demandAttentionChance = openUrlChance + (remainingChance * 0.15);
+            var speakChance = demandAttentionChance + (remainingChance * 0.20);
+            var moveRandomlyChance = speakChance + (remainingChance * 0.25);
+            var followMouseChance = moveRandomlyChance + (remainingChance * 0.20);
+
+            var choice = _random.NextDouble() * 100;
+
+            if (choice < takeItemChance) await TakeItem();
+            else if (choice < openUrlChance) await OpenAnnoyingUrlAsync();
+            else if (choice < demandAttentionChance) await DemandAttention();
+            else if (choice < speakChance) await Speak();
+            else if (choice < moveRandomlyChance) await MoveRandomly();
+            else if (choice < followMouseChance) await FollowMouse();
+            else await MakeSillyDance();
+
+            var minInterval = 3;
+            var maxInterval = 12;
+            var interval = maxInterval - (annoyance / 100.0) * (maxInterval - minInterval);
+            _behaviorTimer.Interval = TimeSpan.FromSeconds(_random.Next((int)interval, (int)interval + 4));
         }
 
         private async Task MakeSillyDance()
@@ -157,6 +170,43 @@ namespace ShadowPet.Desktop.Services
                 _processService.StartProgram(action, message);
 
                 await Task.Delay(1000);
+            }
+
+            await OnDialogueRequested?.Invoke("hide");
+            CurrentState = PetState.Moving;
+            await OnAnimationChangeRequested?.Invoke("moving");
+            _isBusy = false;
+        }
+
+        private async Task OpenAnnoyingUrlAsync()
+        {
+            var settings = _settingsService.LoadSettings();
+            if (settings.AnnoyingUrls == null || settings.AnnoyingUrls.Count == 0) return;
+
+            if (OnConfirmationRequested == null) return;
+
+            _isBusy = true;
+            CurrentState = PetState.DemandingAttention;
+            await OnAnimationChangeRequested?.Invoke("attention");
+
+            var manipulativeMessages = new[] { "¿Puedo...?", "¿Y si hacemos una travesura?", "¡Mira esto! ¿Te atreves?", "Confía en mí, te va a gustar..." };
+            var message = manipulativeMessages[_random.Next(manipulativeMessages.Length)];
+
+            var userAgreed = await OnConfirmationRequested.Invoke("Una preguntita...", message);
+
+            if (userAgreed)
+            {
+                var annoyingMessages = new[] { "Cagaste", "UN TROYANO CORRAN", "¡AQUÍ VIENE!", "¡AQUÍ VIENE EL CAOS!" };
+                await OnDialogueRequested?.Invoke(annoyingMessages[_random.Next(annoyingMessages.Length)]);
+                var url = settings.AnnoyingUrls[_random.Next(settings.AnnoyingUrls.Count)];
+                _processService.OpenUrl(url);
+                await Task.Delay(2000);
+            }
+            else
+            {
+                var complaints = new[] { "¡Qué aburrido!", "Jo, con lo divertido que era...", "Otro día será, supongo.", "Más fome que que clase de Duoc UC", "¡No me hagas esto!", "¡Pero si era una broma!" };
+                await OnDialogueRequested?.Invoke(complaints[_random.Next(complaints.Length)]);
+                await Task.Delay(3000);
             }
 
             await OnDialogueRequested?.Invoke("hide");

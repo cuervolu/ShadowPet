@@ -9,5 +9,6 @@
         public double SoundVolume { get; set; } = 80; // 0-100
         public bool AllowProgramExecution { get; set; } = true;
         public List<PetAction> PetActions { get; set; } = new();
+        public List<string> AnnoyingUrls { get; set; } = new();
     }
 }
