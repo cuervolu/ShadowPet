@@ -7,6 +7,7 @@
         public bool AllowNotifications { get; set; } = true;
         public double AnnoyanceLevel { get; set; } = 50; // 0-100
         public double SoundVolume { get; set; } = 80; // 0-100
+        public bool AllowProgramExecution { get; set; } = true;
         public List<PetAction> PetActions { get; set; } = new();
     }
 }

@@ -24,6 +24,9 @@ namespace ShadowPet.Desktop.ViewModels
         private bool _allowNotifications;
 
         [ObservableProperty]
+        private bool _allowProgramExecution;
+
+        [ObservableProperty]
         private double _annoyanceLevel;
 
         [ObservableProperty]
@@ -42,6 +45,7 @@ namespace ShadowPet.Desktop.ViewModels
 
             _startWithWindows = settings.StartWithWindows;
             _allowNotifications = settings.AllowNotifications;
+            _allowProgramExecution = settings.AllowProgramExecution;
             _annoyanceLevel = settings.AnnoyanceLevel;
             _soundVolume = settings.SoundVolume;
             PetActions = new ObservableCollection<PetAction>(settings.PetActions);
@@ -55,6 +59,7 @@ namespace ShadowPet.Desktop.ViewModels
                 HasRunBefore = _settingsService.LoadSettings().HasRunBefore,
                 StartWithWindows = StartWithWindows,
                 AllowNotifications = AllowNotifications,
+                AllowProgramExecution = AllowProgramExecution,
                 AnnoyanceLevel = AnnoyanceLevel,
                 SoundVolume = SoundVolume,
                 PetActions = PetActions.ToList()
@@ -106,6 +111,7 @@ namespace ShadowPet.Desktop.ViewModels
             var defaultSettings = new AppSettings();
             StartWithWindows = defaultSettings.StartWithWindows;
             AllowNotifications = defaultSettings.AllowNotifications;
+            AllowProgramExecution = defaultSettings.AllowProgramExecution;
             AnnoyanceLevel = defaultSettings.AnnoyanceLevel;
             SoundVolume = defaultSettings.SoundVolume;
             PetActions.Clear();

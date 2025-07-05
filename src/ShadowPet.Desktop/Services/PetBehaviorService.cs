@@ -103,7 +103,7 @@ namespace ShadowPet.Desktop.Services
             _isBusy = false;
         }
 
-        private async Task TakeItem()
+   private async Task TakeItem()
         {
             var settings = _settingsService.LoadSettings();
             var possibleActions = settings.PetActions
@@ -120,6 +120,19 @@ namespace ShadowPet.Desktop.Services
 
             _isBusy = true;
             CurrentState = PetState.TakingItem;
+
+            if (!settings.AllowProgramExecution)
+            {
+                await OnDialogueRequested?.Invoke("Quisiera abrir algo, pero no me dejas...");
+                await OnAnimationChangeRequested?.Invoke("attention");
+                await Task.Delay(3000);
+                await OnDialogueRequested?.Invoke("hide");
+                CurrentState = PetState.Moving;
+                await OnAnimationChangeRequested?.Invoke("moving");
+                _isBusy = false;
+                return;
+            }
+
 
             var action = possibleActions[_random.Next(possibleActions.Count)];
 
@@ -158,6 +171,7 @@ namespace ShadowPet.Desktop.Services
             await OnAnimationChangeRequested?.Invoke("moving");
             _isBusy = false;
         }
+
 
         private async Task FollowMouse()
         {
