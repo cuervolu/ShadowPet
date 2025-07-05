@@ -1,11 +1,9 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Threading;
+﻿using Avalonia.Threading;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Services;
 using ShadowPet.Core.Utils;
 using System;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 namespace ShadowPet.Desktop.Services
@@ -60,31 +58,26 @@ namespace ShadowPet.Desktop.Services
         {
             if (_isBusy || (CurrentState != PetState.Idle && CurrentState != PetState.Moving)) return;
 
+            var settings = _settingsService.LoadSettings();
             var choice = _random.Next(100);
 
-            if (choice < 15)
+            if (settings.AllowProgramExecution)
             {
-                await DemandAttention();
+                if (choice < 15) await DemandAttention();
+                else if (choice < 30) await Speak();
+                else if (choice < 50) await MoveRandomly();
+                else if (choice < 65) await FollowMouse();
+                else if (choice < 80) await MakeSillyDance();
+                else if (choice < 95) await TakeItem(); // 15% of chance
             }
-            else if (choice < 30)
+            else
             {
-                await Speak();
-            }
-            else if (choice < 50)
-            {
-                await MoveRandomly();
-            }
-            else if (choice < 65)
-            {
-                await FollowMouse();
-            }
-            else if (choice < 80)
-            {
-                await MakeSillyDance();
-            }
-            else if (choice < 95)
-            {
-                await TakeItem();
+                if (choice < 20) await DemandAttention();
+                else if (choice < 40) await Speak();
+                else if (choice < 65) await MoveRandomly();
+                else if (choice < 80) await FollowMouse();
+                else if (choice < 95) await MakeSillyDance();
+                else if (choice < 98) await TakeItem(); // <-- Very low chance (3%)
             }
 
             _behaviorTimer.Interval = TimeSpan.FromSeconds(_random.Next(5, 12));
@@ -103,7 +96,7 @@ namespace ShadowPet.Desktop.Services
             _isBusy = false;
         }
 
-   private async Task TakeItem()
+        private async Task TakeItem()
         {
             var settings = _settingsService.LoadSettings();
             var possibleActions = settings.PetActions
@@ -180,7 +173,7 @@ namespace ShadowPet.Desktop.Services
             await OnAnimationChangeRequested?.Invoke("moving");
 
             var followDuration = 4000;
-            var followStopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var followStopwatch = Stopwatch.StartNew();
 
             while (followStopwatch.ElapsedMilliseconds < followDuration)
             {
@@ -251,4 +244,3 @@ namespace ShadowPet.Desktop.Services
         }
     }
 }
-
