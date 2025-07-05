@@ -5,86 +5,111 @@
         x:DataType="vm:SettingsViewModel"
         Icon="/Assets/icon.ico"
         Title="Configuración de Shadow"
-        CanResize="False"
-        SizeToContent="Height"
-        Width="400">
+        CanResize="True"
+        WindowStartupLocation="CenterOwner"
+        Width="500"
+        SizeToContent="Height">
 
     <Design.DataContext>
         <vm:SettingsViewModel />
     </Design.DataContext>
 
     <Border Padding="15">
-        <StackPanel Spacing="10">
-            <TextBlock Text="Configuración" FontSize="18" FontWeight="SemiBold"
-                       HorizontalAlignment="Center" Margin="0,0,0,10" />
+        <Grid RowDefinitions="Auto,*,Auto">
 
-            <TextBlock Text="General" FontWeight="Bold" Margin="0,10,0,5" />
-            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto"
-                  VerticalAlignment="Center" RowSpacing="10">
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Iniciar con Windows"
-                           VerticalAlignment="Center" />
-                <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="{Binding StartWithWindows}" />
+            <TextBlock Grid.Row="0" Text="Configuración" FontSize="18" FontWeight="SemiBold"
+                       HorizontalAlignment="Center" Margin="0,0,0,15" />
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Permitir notificaciones"
-                           VerticalAlignment="Center" />
-                <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="{Binding AllowNotifications}" />
+            <TabControl Grid.Row="1">
+                <!-- PESTAÑA GENERAL -->
+                <TabItem Header="General">
+                    <StackPanel Margin="15" Spacing="15">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto"
+                              VerticalAlignment="Center" RowSpacing="15">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Tema de la aplicación"
+                                       VerticalAlignment="Center" />
+                            <ComboBox Grid.Row="0" Grid.Column="1"
+                                      ItemsSource="{Binding AvailableThemes}"
+                                      SelectedItem="{Binding SelectedTheme}" Width="120" />
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Permitir que abra programas"
-                           VerticalAlignment="Center" />
-                <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding AllowProgramExecution}" />
-            </Grid>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Iniciar con Windows"
+                                       VerticalAlignment="Center" />
+                            <ToggleSwitch Grid.Row="1" Grid.Column="1"
+                                          IsChecked="{Binding StartWithWindows}" />
 
-            <TextBlock Text="Comportamiento" FontWeight="Bold" Margin="0,15,0,5" />
-            <TextBlock Text="Nivel de Molestia" />
-            <Slider Minimum="0" Maximum="100" Value="{Binding AnnoyanceLevel}" />
-            <TextBlock Text="Volumen de Sonido" Margin="0,10,0,0" />
-            <Slider Minimum="0" Maximum="100" Value="{Binding SoundVolume}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="Permitir notificaciones molestas"
+                                       VerticalAlignment="Center" Opacity="0.5" />
+                            <ToggleSwitch Grid.Row="2" Grid.Column="1"
+                                          IsChecked="{Binding AllowNotifications}"
+                                          IsEnabled="False">
+                                <ToolTip.Tip>
+                                    <TextBlock
+                                        Text="Esta función aún no está implementada. ¡Próximamente!" />
+                                </ToolTip.Tip>
+                            </ToggleSwitch>
+                        </Grid>
 
-            <TextBlock Text="Programas" FontWeight="Bold" Margin="0,15,0,5" />
-            <TextBlock Text="Shadow puede iniciar estos programas al azar:" TextWrapping="Wrap"
-                       FontSize="12" Opacity="0.7" />
+                        <TextBlock Text="Volumen de Sonido" Margin="0,10,0,0" />
+                        <Slider Minimum="0" Maximum="100" Value="{Binding SoundVolume}" />
+                    </StackPanel>
+                </TabItem>
 
-            <DataGrid ItemsSource="{Binding PetActions}"
-                      SelectedItem="{Binding SelectedAction}"
-                      AutoGenerateColumns="False"
-                      CanUserResizeColumns="False"
-                      CanUserSortColumns="False"
-                      IsReadOnly="True"
-                      GridLinesVisibility="Horizontal"
-                      BorderThickness="1"
-                      Height="120"
-                      Margin="0,10,0,0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*" />
-                    <DataGridTextColumn Header="Ruta" Binding="{Binding ProgramPath}" Width="2*" />
+                <!-- PESTAÑA COMPORTAMIENTO -->
+                <TabItem Header="Comportamiento">
+                    <StackPanel Margin="15" Spacing="15">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto"
+                              VerticalAlignment="Center">
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Permitir que abra programas y URLs"
+                                       VerticalAlignment="Center" />
+                            <ToggleSwitch Grid.Row="0" Grid.Column="1"
+                                          IsChecked="{Binding AllowProgramExecution}" />
+                        </Grid>
 
-                    <DataGridTemplateColumn Width="SizeToCells">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Eliminar"
-                                        Margin="5"
-                                        Command="{Binding $parent[Window].DataContext.RemoveActionCommand}"
-                                        CommandParameter="{Binding}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                        <TextBlock Text="Nivel de Molestia" Margin="0,10,0,0" />
+                        <Slider Minimum="0" Maximum="100" Value="{Binding AnnoyanceLevel}">
+                            <ToolTip.Tip>
+                                <TextBlock
+                                    Text="Define qué tan caótica y frecuente es la mascota en sus acciones." />
+                            </ToolTip.Tip>
+                        </Slider>
+                    </StackPanel>
+                </TabItem>
 
-            <Button Content="Añadir Programa..."
-                    Command="{Binding AddActionCommand}"
-                    CommandParameter="{Binding $parent[Window]}"
-                    HorizontalAlignment="Stretch"
-                    Margin="0,8,0,0" />
+                <!-- PESTAÑA PERSONALIZACIÓN -->
+                <TabItem Header="Personalización">
+                    <StackPanel Margin="15" Spacing="15">
+                        <TextBlock Text="Diálogos" FontWeight="Bold" Margin="0,0,0,5" />
+                        <TextBlock Text="Añade o elimina las frases que dirá Shadow:"
+                                   TextWrapping="Wrap" FontSize="12" Opacity="0.7" />
 
-            <Separator Margin="0,20,0,10" />
+                        <ListBox ItemsSource="{Binding CustomDialogues}"
+                                 SelectedItem="{Binding SelectedDialogue, Mode=TwoWay}"
+                                 Height="150" BorderThickness="1" BorderBrush="Gray"
+                                 Margin="0,10,0,0" />
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-                <Button Content="Reset"
-                        Command="{Binding ResetSettingsCommand}" />
-                <Button Content="Guardar" IsDefault="True"
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,8,0,0">
+                            <TextBox Grid.Column="0" Watermark="Escribe una nueva frase..."
+                                     Text="{Binding NewDialogueText, Mode=TwoWay}" />
+                            <Button Grid.Column="1" Content="Añadir"
+                                    Command="{Binding AddDialogueCommand}" />
+                        </Grid>
+                        <Button Content="Eliminar Diálogo Seleccionado"
+                                Command="{Binding RemoveDialogueCommand}"
+                                HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                                IsEnabled="{Binding IsDialogueSelected}" />
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+
+            <!-- BOTONES INFERIORES -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right"
+                        Spacing="10" Margin="0,20,0,0">
+                <Button Content="Reset" Command="{Binding ResetSettingsCommand}" />
+                <Button Content="Guardar y Cerrar" IsDefault="True" Classes="Primary"
                         Command="{Binding SaveSettingsCommand}" Click="CloseButton_Click" />
             </StackPanel>
-        </StackPanel>
+        </Grid>
     </Border>
 </Window>
