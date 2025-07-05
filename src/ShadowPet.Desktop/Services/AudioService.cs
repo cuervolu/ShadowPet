@@ -1,6 +1,7 @@
 ﻿using Avalonia.Platform;
 using NAudio.Wave;
 using Serilog;
+using ShadowPet.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +10,7 @@ namespace ShadowPet.Desktop.Services
     public class AudioService : IDisposable
     {
         private readonly Random _random = new();
+        private readonly SettingsService _settingsService;
         private readonly List<string> _speakSoundPaths =
         [
             "avares://ShadowPet/Assets/Raw/Audio/WilsonVoice_generic_2.mp3",
@@ -25,6 +27,11 @@ namespace ShadowPet.Desktop.Services
         ];
         private WaveOutEvent? _outputDevice;
         private AudioFileReader? _audioFile;
+
+        public AudioService(SettingsService settingsService)
+        {
+            _settingsService = settingsService;
+        }
 
         public void PlayRandomSpeakSound()
         {
@@ -44,7 +51,8 @@ namespace ShadowPet.Desktop.Services
 
                 var waveStream = new Mp3FileReader(memoryStream);
                 _outputDevice.Init(waveStream);
-                _outputDevice.Volume = 0.4f; 
+                var settings = _settingsService.LoadSettings();
+                _outputDevice.Volume = (float)(settings.SoundVolume / 100.0);
                 _outputDevice.Play();
             }
             catch (Exception ex)
