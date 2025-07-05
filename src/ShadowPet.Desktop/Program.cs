@@ -62,6 +62,8 @@ sealed class Program
         services.AddSingleton<ThemeService>();
         services.AddSingleton<AnnoyingMessagesService>();
         services.AddSingleton<ProcessService>();
+        services.AddSingleton<ProgramFinderService>();
+        services.AddSingleton<NotificationService>();
         services.AddSingleton<ProgramMessagesService>();
         services.AddSingleton<UpdateService>();
         services.AddSingleton<AppPaths>();

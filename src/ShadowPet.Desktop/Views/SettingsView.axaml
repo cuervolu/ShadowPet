@@ -7,8 +7,8 @@
         Title="Configuración de Shadow"
         CanResize="True"
         WindowStartupLocation="CenterOwner"
-        Width="500"
-        SizeToContent="Height">
+        Width="1200" MinWidth="750"
+        Height="600" MinHeight="550">
 
     <Design.DataContext>
         <vm:SettingsViewModel />
@@ -21,10 +21,9 @@
                        HorizontalAlignment="Center" Margin="0,0,0,15" />
 
             <TabControl Grid.Row="1">
-                <!-- PESTAÑA GENERAL -->
                 <TabItem Header="General">
                     <StackPanel Margin="15" Spacing="15">
-                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto"
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto"
                               VerticalAlignment="Center" RowSpacing="15">
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="Tema de la aplicación"
                                        VerticalAlignment="Center" />
@@ -55,7 +54,6 @@
                     </StackPanel>
                 </TabItem>
 
-                <!-- PESTAÑA COMPORTAMIENTO -->
                 <TabItem Header="Comportamiento">
                     <StackPanel Margin="15" Spacing="15">
                         <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto"
@@ -77,33 +75,85 @@
                     </StackPanel>
                 </TabItem>
 
-                <!-- PESTAÑA PERSONALIZACIÓN -->
                 <TabItem Header="Personalización">
-                    <StackPanel Margin="15" Spacing="15">
-                        <TextBlock Text="Diálogos" FontWeight="Bold" Margin="0,0,0,5" />
-                        <TextBlock Text="Añade o elimina las frases que dirá Shadow:"
-                                   TextWrapping="Wrap" FontSize="12" Opacity="0.7" />
+                    <Grid ColumnDefinitions="*,20,*" Margin="15">
 
-                        <ListBox ItemsSource="{Binding CustomDialogues}"
-                                 SelectedItem="{Binding SelectedDialogue, Mode=TwoWay}"
-                                 Height="150" BorderThickness="1" BorderBrush="Gray"
-                                 Margin="0,10,0,0" />
+                        <StackPanel Grid.Column="0" Spacing="10">
+                            <TextBlock Text="Programas" FontWeight="Bold" Margin="0,0,0,5" />
+                            <TextBlock Text="Añade programas para que Shadow interactúe con ellos."
+                                       TextWrapping="Wrap" FontSize="12" Opacity="0.7" />
 
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,8,0,0">
-                            <TextBox Grid.Column="0" Watermark="Escribe una nueva frase..."
-                                     Text="{Binding NewDialogueText, Mode=TwoWay}" />
-                            <Button Grid.Column="1" Content="Añadir"
-                                    Command="{Binding AddDialogueCommand}" />
-                        </Grid>
-                        <Button Content="Eliminar Diálogo Seleccionado"
-                                Command="{Binding RemoveDialogueCommand}"
-                                HorizontalAlignment="Stretch" Margin="0,8,0,0"
-                                IsEnabled="{Binding IsDialogueSelected}" />
-                    </StackPanel>
+                            <DataGrid ItemsSource="{Binding PetActions}"
+                                      SelectedItem="{Binding SelectedAction}"
+                                      AutoGenerateColumns="False" CanUserResizeColumns="False"
+                                      CanUserSortColumns="False"
+                                      IsReadOnly="True" GridLinesVisibility="Horizontal"
+                                      BorderThickness="1"
+                                      MaxHeight="250" Margin="0,10,0,0">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Nombre" Binding="{Binding Name}"
+                                                        Width="*" />
+                                    <DataGridTextColumn Header="Ruta"
+                                                        Binding="{Binding ProgramPath}" Width="2*" />
+                                    <DataGridTemplateColumn Width="SizeToCells">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Eliminar" Margin="5"
+                                                        Classes="Danger,Small"
+                                                        Command="{Binding $parent[Window].DataContext.RemoveActionCommand}"
+                                                        CommandParameter="{Binding}" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,8,0,0">
+                                <TextBox Grid.Column="0"
+                                         Watermark="Escribe un ejecutable (ej: notepad.exe)"
+                                         Text="{Binding ProgramNameToSearch, Mode=TwoWay}" />
+
+                                <Button Grid.Column="1" Content="Buscar y Añadir"
+                                        Command="{Binding FindAndAddProgramCommand}"
+                                        IsVisible="{Binding !IsSearching}" />
+                                <Button Grid.Column="1" Content="Cancelar"
+                                        Command="{Binding CancelFindProgramCommand}"
+                                        IsVisible="{Binding IsSearching}" Classes="Danger" />
+                            </Grid>
+
+                            <ProgressBar Height="4" IsIndeterminate="True"
+                                         IsVisible="{Binding IsSearching}"
+                                         VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <Separator Grid.Column="1" VerticalAlignment="Stretch" />
+
+                        <StackPanel Grid.Column="2" Spacing="10">
+                            <TextBlock Text="Diálogos" FontWeight="Bold" Margin="0,0,0,5" />
+                            <TextBlock Text="Añade o elimina las frases que dirá Shadow:"
+                                       TextWrapping="Wrap" FontSize="12" Opacity="0.7" />
+
+                            <ListBox ItemsSource="{Binding CustomDialogues}"
+                                     SelectedItem="{Binding SelectedDialogue, Mode=TwoWay}"
+                                     MaxHeight="250" BorderThickness="1" BorderBrush="Gray"
+                                     Margin="0,10,0,0" />
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10" Margin="0,8,0,0">
+                                <TextBox Grid.Column="0" Watermark="Escribe una nueva frase..."
+                                         Text="{Binding NewDialogueText, Mode=TwoWay}" />
+                                <Button Grid.Column="1" Content="Añadir"
+                                        Command="{Binding AddDialogueCommand}" />
+                            </Grid>
+                            <Button Content="Eliminar Diálogo Seleccionado"
+                                    Command="{Binding RemoveDialogueCommand}"
+                                    HorizontalAlignment="Stretch" Margin="0,8,0,0"
+                                    IsEnabled="{Binding IsDialogueSelected}" />
+                        </StackPanel>
+
+                    </Grid>
                 </TabItem>
             </TabControl>
 
-            <!-- BOTONES INFERIORES -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right"
                         Spacing="10" Margin="0,20,0,0">
                 <Button Content="Reset" Command="{Binding ResetSettingsCommand}" />

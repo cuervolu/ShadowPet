@@ -1,21 +1,28 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Services;
 using ShadowPet.Core.Utils;
 using ShadowPet.Desktop.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 namespace ShadowPet.Desktop.ViewModels
 {
     public partial class SettingsViewModel : ViewModelBase
     {
         private readonly SettingsService _settingsService;
+        private readonly ILogger<SettingsViewModel> _logger;
+        private readonly ProgramFinderService _programFinderService;
+        private readonly NotificationService _notificationService;
         private readonly WindowsStartupService _windowsStartupService;
         private readonly ThemeService _themeService;
 
@@ -56,21 +63,31 @@ namespace ShadowPet.Desktop.ViewModels
         private string _selectedTheme;
         public List<string> AvailableThemes { get; } = ["Dark", "Light"];
 
+        [ObservableProperty]
+        private string? _programNameToSearch;
+
+        [ObservableProperty]
+        private string? _searchStatus;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(FindAndAddProgramCommand))]
+        [NotifyCanExecuteChangedFor(nameof(CancelFindProgramCommand))]
+        private bool _isSearching;
+
         public bool IsDialogueSelected => !string.IsNullOrEmpty(SelectedDialogue);
 
         public ObservableCollection<PetAction> PetActions { get; }
         public ObservableCollection<string> CustomDialogues { get; }
+        private CancellationTokenSource? _findProgramCts;
 
-        public SettingsViewModel()
-        {
-
-        }
-
-        public SettingsViewModel(SettingsService settingsService, WindowsStartupService windowsStartupService, ThemeService themeService)
+        public SettingsViewModel(SettingsService settingsService, WindowsStartupService windowsStartupService, ThemeService themeService, ProgramFinderService programFinderService, NotificationService notificationService, ILogger<SettingsViewModel> logger)
         {
             _settingsService = settingsService;
             _windowsStartupService = windowsStartupService;
             _themeService = themeService;
+            _programFinderService = programFinderService;
+            _notificationService = notificationService;
+            _logger = logger;
             var settings = _settingsService.LoadSettings();
 
             _startWithWindows = settings.StartWithWindows;
@@ -81,6 +98,11 @@ namespace ShadowPet.Desktop.ViewModels
             _selectedTheme = settings.AppTheme;
             PetActions = new ObservableCollection<PetAction>(settings.PetActions);
             CustomDialogues = new ObservableCollection<string>(settings.CustomDialogues);
+        }
+
+        public void InitializeNotificationManager(TopLevel topLevel)
+        {
+            _notificationService.SetHostWindow(topLevel);
         }
 
 
@@ -184,6 +206,78 @@ namespace ShadowPet.Desktop.ViewModels
                 }
             }
         }
+
+
+        [RelayCommand(CanExecute = nameof(CanFindProgram))]
+        private async Task FindAndAddProgramAsync()
+        {
+            if (string.IsNullOrWhiteSpace(ProgramNameToSearch))
+            {
+                _notificationService.Show("Atención", "Por favor, escribe un nombre de programa.", NotificationType.Warning);
+                return;
+            }
+
+            _findProgramCts = new CancellationTokenSource();
+            IsSearching = true;
+
+            try
+            {
+                var programPath = await _programFinderService.FindExecutablePathAsync(ProgramNameToSearch, _findProgramCts.Token);
+
+                if (!string.IsNullOrEmpty(programPath))
+                {
+                    var newAction = new PetAction
+                    {
+                        /*...*/
+                    };
+                    PetActions.Add(newAction);
+                    _notificationService.Show("Éxito", $"'{newAction.Name}' añadido correctamente.", NotificationType.Success);
+                    ProgramNameToSearch = string.Empty;
+                }
+                else
+                {
+                    _notificationService.Show("No encontrado", $"No se pudo encontrar '{ProgramNameToSearch}'.", NotificationType.Error);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                _notificationService.Show("Cancelado", "La búsqueda ha sido cancelada.");
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Show("Error Inesperado", "Ocurrió un error durante la búsqueda.", NotificationType.Error);
+                _logger.LogError(ex, "Error al buscar el programa '{ProgramName}'", ProgramNameToSearch);
+            }
+            finally
+            {
+                IsSearching = false;
+                _findProgramCts?.Dispose();
+                _findProgramCts = null;
+                FindAndAddProgramCommand.NotifyCanExecuteChanged();
+                CancelFindProgramCommand.NotifyCanExecuteChanged();
+            }
+        }
+
+        private async Task ShowStatusAsync(string message, int durationMs)
+        {
+            SearchStatus = message;
+            await Task.Delay(durationMs);
+            if (SearchStatus == message)
+            {
+                SearchStatus = string.Empty;
+            }
+        }
+
+
+
+        private bool CanFindProgram() => !IsSearching;
+
+        [RelayCommand(CanExecute = nameof(IsSearching))]
+        private void CancelFindProgram()
+        {
+            _findProgramCts?.Cancel();
+        }
+
 
         [RelayCommand]
         private void RemoveAction(PetAction? action)
