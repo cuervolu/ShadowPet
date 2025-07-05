@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NuGet.Versioning;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Services;
 using ShadowPet.Desktop.Services;
@@ -19,7 +18,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Velopack;
-
 namespace ShadowPet.Desktop.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase, IDisposable
@@ -296,10 +294,21 @@ namespace ShadowPet.Desktop.ViewModels
 
             var primaryScreen = _screens.FirstOrDefault(s => s.IsPrimary) ?? _screens[0];
             var workingArea = primaryScreen.WorkingArea;
+            const int padding = 10;
+
+            var windowWidth = _windowWidth > 0 ? (int)_windowWidth : 350;
+            var windowHeight = _windowHeight > 0 ? (int)_windowHeight : 250;
+
+
+            var maxX = workingArea.Right - windowWidth - padding;
+            var maxY = workingArea.Bottom - windowHeight - padding;
+
+            var minX = workingArea.X + padding;
+            var minY = workingArea.Y + padding;
 
             _targetPosition = new PixelPoint(
-                _random.Next(workingArea.X, workingArea.Width - (int)_windowWidth),
-                _random.Next(workingArea.Y, workingArea.Height - (int)_windowHeight)
+                _random.Next(minX, maxX),
+                _random.Next(minY, maxY)
             );
         }
 
