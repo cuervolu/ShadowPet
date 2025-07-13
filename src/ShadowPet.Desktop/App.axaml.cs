@@ -2,16 +2,16 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
-using System.Linq;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Microsoft.Extensions.DependencyInjection;
 using ShadowPet.Core.Services;
+using ShadowPet.Desktop.Services;
 using ShadowPet.Desktop.ViewModels;
 using ShadowPet.Desktop.Views;
 using System;
-
+using System.Linq;
 namespace ShadowPet.Desktop;
 
 public partial class App : Application
@@ -21,14 +21,18 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-      public override void OnFrameworkInitializationCompleted()
+    public override void OnFrameworkInitializationCompleted()
     {
+        var settingsService = Program.ServiceProvider!.GetRequiredService<SettingsService>();
+        var themeService = Program.ServiceProvider!.GetRequiredService<ThemeService>();
+
+        var settings = settingsService.LoadSettings();
+
+        themeService.SetTheme(settings.AppTheme);
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             DisableAvaloniaDataAnnotationValidation();
-
-            var settingsService = Program.ServiceProvider!.GetRequiredService<SettingsService>();
-            var settings = settingsService.LoadSettings();
 
             if (settings.HasRunBefore)
             {
@@ -54,8 +58,9 @@ public partial class App : Application
 
                 homeViewModel.StartPetRequested += () =>
                 {
-                    settings.HasRunBefore = true;
-                    settingsService.SaveSettings(settings);
+                    var currentSettings = settingsService.LoadSettings();
+                    currentSettings.HasRunBefore = true;
+                    settingsService.SaveSettings(currentSettings);
 
                     var mainWindowViewModel = Program.ServiceProvider!.GetRequiredService<MainWindowViewModel>();
                     var mainWindow = new MainWindow

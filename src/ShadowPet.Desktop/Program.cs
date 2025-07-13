@@ -23,10 +23,6 @@ sealed class Program
         var services = new ServiceCollection();
         ConfigureServices(services);
         ServiceProvider = services.BuildServiceProvider();
-        var themeService = ServiceProvider.GetRequiredService<ThemeService>();
-        var settingsService = ServiceProvider.GetRequiredService<SettingsService>();
-        var settings = settingsService.LoadSettings();
-        themeService.SetTheme(settings.AppTheme);
         Log.Information("Iniciando Shadow Pet...");
         try
         {
