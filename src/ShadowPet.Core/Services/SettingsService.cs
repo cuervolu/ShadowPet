@@ -3,51 +3,79 @@ using ShadowPet.Core.Models;
 using ShadowPet.Core.Utils;
 namespace ShadowPet.Core.Services
 {
-    public class SettingsService
+    public class SettingsService(
+        AppPaths appPaths)
     {
-        private readonly string _settingsPath;
-        private readonly JsonSerializerSettings _serializerSettings;
-
-        public SettingsService(AppPaths appPaths)
+        private readonly string _settingsPath = Path.Combine(appPaths.AppDataFolder, "settings.json");
+        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
         {
-            _settingsPath = Path.Combine(appPaths.AppDataFolder, "settings.json");
-            _serializerSettings = new JsonSerializerSettings
-            {
-                Formatting = Formatting.Indented
-            };
-        }
+            Formatting = Formatting.Indented
+        };
 
         public AppSettings LoadSettings()
         {
+            AppSettings settings;
             if (!File.Exists(_settingsPath))
             {
-                return new AppSettings();
+                settings = new AppSettings();
             }
-
-            var json = File.ReadAllText(_settingsPath);
-            var settings = JsonConvert.DeserializeObject<AppSettings>(json) ?? new AppSettings();
+            else
+            {
+                var json = File.ReadAllText(_settingsPath);
+                settings = JsonConvert.DeserializeObject<AppSettings>(json) ?? new AppSettings();
+            }
 
             foreach (var action in settings.PetActions.Where(a => a.ProgramType == SupportedProgram.Unknown))
             {
                 action.ProgramType = ProgramDetector.DetectProgramType(action.ProgramPath);
             }
 
-            if (settings.AnnoyingUrls == null || settings.AnnoyingUrls.Count == 0)
-            {
-                InitializeDefaultUrls(settings);
-            }
-
-            if (settings.CustomDialogues == null || settings.CustomDialogues.Count == 0)
-            {
-                InitializeDefaultDialogues(settings);
-            }
+            SyncDefaultLists(settings);
 
             return settings;
         }
 
-        private void InitializeDefaultUrls(AppSettings settings)
+        public void SaveSettings(AppSettings settings)
         {
-            settings.AnnoyingUrls = new List<string>
+            var json = JsonConvert.SerializeObject(settings, _serializerSettings);
+            File.WriteAllText(_settingsPath, json);
+        }
+
+        private void SyncDefaultLists(AppSettings settings)
+        {
+            var defaultUrls = GetDefaultUrls();
+            if (settings.AnnoyingUrls == null)
+            {
+                settings.AnnoyingUrls = new List<string>();
+            }
+            var existingUrls = new HashSet<string>(settings.AnnoyingUrls, StringComparer.OrdinalIgnoreCase);
+            foreach (var url in defaultUrls)
+            {
+                if (existingUrls.Add(url))
+                {
+                    settings.AnnoyingUrls.Add(url);
+                }
+            }
+
+
+            var defaultDialogues = GetDefaultDialogues();
+            if (settings.CustomDialogues == null)
+            {
+                settings.CustomDialogues = new List<string>();
+            }
+            var existingDialogues = new HashSet<string>(settings.CustomDialogues, StringComparer.OrdinalIgnoreCase);
+            foreach (var dialogue in defaultDialogues)
+            {
+                if (existingDialogues.Add(dialogue))
+                {
+                    settings.CustomDialogues.Add(dialogue);
+                }
+            }
+        }
+
+        private List<string> GetDefaultUrls()
+        {
+            return new List<string>
             {
                 "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 "https://youtu.be/pzjeSdsXVm4?si=N8RnohE0xUzvxqNK", // >:D
@@ -72,13 +100,19 @@ namespace ShadowPet.Core.Services
                 "https://tr.rbxcdn.com/180DAY-91b0d03fed98d377b00dc6660c3f2128/420/420/Hat/Webp/noFilter",
                 "https://i.pinimg.com/236x/34/c7/55/34c755dd000074cc14fa7780404618d6.jpg",
                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVFSH5M1uH9_LKKFySdxS3X90qiusrjJr7VQ&s",
-                "https://i.imgflip.com/9u1u3k.jpg"
+                "https://i.imgflip.com/9u1u3k.jpg",
+                "https://youtu.be/9hUzb2Fsz6k?si=0bgm7vPo9ubfeUfQ",
+                "https://youtu.be/eNfbXJXrxvc?si=eI6P7sb9sKltqjOv",
+                "https://youtu.be/AKmyTCLaXrw?si=3fwEcWY9YRBrdd51",
+                "https://youtu.be/-wv46hX_gsE?si=QhgF6lYLV__SXrXU",
+                "https://www.youtube.com/watch?v=iDLmYZ5HqgM",
+                "https://www.youtube.com/watch?v=swnVdhCsYBk"
             };
         }
 
-        private void InitializeDefaultDialogues(AppSettings settings)
+        private List<string> GetDefaultDialogues()
         {
-            settings.CustomDialogues = new List<string>
+            return new List<string>
             {
                 "Heh.",
                 "¿Listos para unas risitas?",
@@ -103,13 +137,6 @@ namespace ShadowPet.Core.Services
                 "Hey niña, ¿quieres comprar lechuga?",
                 "Acabo de tener un sueño donde yo era Shadow Milk Cookie"
             };
-        }
-
-
-        public void SaveSettings(AppSettings settings)
-        {
-            var json = JsonConvert.SerializeObject(settings, _serializerSettings);
-            File.WriteAllText(_settingsPath, json);
         }
     }
 }
