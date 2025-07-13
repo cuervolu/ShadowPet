@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Velopack;
 using Velopack.Sources;
-
 namespace ShadowPet.Desktop.Services
 {
     public class UpdateService
@@ -27,6 +26,12 @@ namespace ShadowPet.Desktop.Services
 
         public async Task CheckForUpdates()
         {
+            if (!_updateManager.IsInstalled)
+            {
+                _logger.LogWarning("Se omite la búsqueda de actualizaciones porque la aplicación no está instalada (probablemente se está ejecutando en modo de depuración)");
+                return;
+            }
+
             try
             {
                 var updateInfo = await _updateManager.CheckForUpdatesAsync();
