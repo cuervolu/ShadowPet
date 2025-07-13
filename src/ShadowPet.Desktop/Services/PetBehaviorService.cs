@@ -1,10 +1,10 @@
 ﻿using Avalonia.Threading;
 using ShadowPet.Core.Models;
 using ShadowPet.Core.Services;
-using ShadowPet.Core.Utils;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 namespace ShadowPet.Desktop.Services
 {
@@ -20,6 +20,7 @@ namespace ShadowPet.Desktop.Services
         private readonly DispatcherTimer _behaviorTimer;
         public PetState CurrentState { get; private set; } = PetState.Moving;
         private bool _isBusy = false;
+        private CancellationTokenSource? _behaviorCts;
 
         private readonly SettingsService _settingsService;
         private readonly ProcessService _processService;
@@ -45,6 +46,7 @@ namespace ShadowPet.Desktop.Services
 
         public async Task HandleDragStart()
         {
+            _behaviorCts?.Cancel(); // Cancel current action when dragging starts
             CurrentState = PetState.Dragging;
             await OnAnimationChangeRequested?.Invoke("dragging");
         }
@@ -59,36 +61,40 @@ namespace ShadowPet.Desktop.Services
         {
             if (_isBusy || (CurrentState != PetState.Idle && CurrentState != PetState.Moving)) return;
 
+            _behaviorCts = new CancellationTokenSource();
+            var token = _behaviorCts.Token;
+
             var settings = _settingsService.LoadSettings();
             var annoyance = settings.AnnoyanceLevel;
 
-            double takeItemChance;
-            if (settings.AllowProgramExecution)
-            {
-                takeItemChance = 5 + (annoyance / 100.0) * 25.0;
-            }
-            else
-            {
-                takeItemChance = 1 + (annoyance / 100.0) * 3.0;
-            }
-
+            double takeItemChance = settings.AllowProgramExecution ? 5 + (annoyance / 100.0) * 25.0 : 1 + (annoyance / 100.0) * 3.0;
             var openUrlChance = takeItemChance + (5 + (annoyance / 100.0) * 20.0);
-
             var remainingChance = 100.0 - openUrlChance;
             var demandAttentionChance = openUrlChance + (remainingChance * 0.15);
             var speakChance = demandAttentionChance + (remainingChance * 0.20);
             var moveRandomlyChance = speakChance + (remainingChance * 0.25);
             var followMouseChance = moveRandomlyChance + (remainingChance * 0.20);
-
             var choice = _random.NextDouble() * 100;
 
-            if (choice < takeItemChance) await TakeItem();
-            else if (choice < openUrlChance) await OpenAnnoyingUrlAsync();
-            else if (choice < demandAttentionChance) await DemandAttention();
-            else if (choice < speakChance) await Speak();
-            else if (choice < moveRandomlyChance) await MoveRandomly();
-            else if (choice < followMouseChance) await FollowMouse();
-            else await MakeSillyDance();
+            try
+            {
+                if (choice < takeItemChance) await TakeItem(token);
+                else if (choice < openUrlChance) await OpenAnnoyingUrlAsync(token);
+                else if (choice < demandAttentionChance) await DemandAttention(token);
+                else if (choice < speakChance) await Speak(token);
+                else if (choice < moveRandomlyChance) await MoveRandomly();
+                else if (choice < followMouseChance) await FollowMouse(token);
+                else await MakeSillyDance(token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Action was cancelled, which is fine. The cleanup is in the finally block of each method.
+            }
+            finally
+            {
+                _behaviorCts?.Dispose();
+                _behaviorCts = null;
+            }
 
             var minInterval = 3;
             var maxInterval = 12;
@@ -96,201 +102,231 @@ namespace ShadowPet.Desktop.Services
             _behaviorTimer.Interval = TimeSpan.FromSeconds(_random.Next((int)interval, (int)interval + 4));
         }
 
-        private async Task MakeSillyDance()
+        public async Task TriggerPatPat()
+        {
+            if (CurrentState == PetState.PatPat) return;
+
+            // Cancel any ongoing behavior from the timer
+            _behaviorCts?.Cancel();
+            _isBusy = true; // Take control
+
+            CurrentState = PetState.PatPat;
+            await OnAnimationChangeRequested?.Invoke("patpat");
+
+            // The patting animation itself cannot be interrupted
+            await Task.Delay(1500);
+
+            CurrentState = PetState.Moving;
+            await OnAnimationChangeRequested?.Invoke("moving");
+            _isBusy = false;
+        }
+
+        private async Task MakeSillyDance(CancellationToken token)
         {
             _isBusy = true;
             CurrentState = PetState.SillyDance;
             await OnAnimationChangeRequested?.Invoke("victoria_face");
-
-            await Task.Delay(3000);
-
-            CurrentState = PetState.Moving;
-            await OnAnimationChangeRequested?.Invoke("moving");
-            _isBusy = false;
+            try
+            {
+                await Task.Delay(3000, token);
+            }
+            catch (OperationCanceledException)
+            {
+                /* Task was cancelled, exit gracefully */
+            }
+            finally
+            {
+                CurrentState = PetState.Moving;
+                await OnAnimationChangeRequested?.Invoke("moving");
+                _isBusy = false;
+            }
         }
 
-        private async Task TakeItem()
+        private async Task TakeItem(CancellationToken token)
         {
             var settings = _settingsService.LoadSettings();
-            var possibleActions = settings.PetActions
-                .Where(a => !string.IsNullOrWhiteSpace(a.ProgramPath))
-                .ToList();
-
-            if (!possibleActions.Any())
-            {
-                await OnDialogueRequested?.Invoke("Uhm... creo que no tengo ideas.");
-                await Task.Delay(2000);
-                await OnDialogueRequested?.Invoke("hide");
-                return;
-            }
+            var possibleActions = settings.PetActions.Where(a => !string.IsNullOrWhiteSpace(a.ProgramPath)).ToList();
+            if (!possibleActions.Any()) return;
 
             _isBusy = true;
             CurrentState = PetState.TakingItem;
-
-            if (!settings.AllowProgramExecution)
+            try
             {
-                await OnDialogueRequested?.Invoke("Quisiera abrir algo, pero no me dejas...");
-                await OnAnimationChangeRequested?.Invoke("attention");
-                await Task.Delay(3000);
+                if (!settings.AllowProgramExecution)
+                {
+                    await OnDialogueRequested?.Invoke("Quisiera abrir algo, pero no me dejas...");
+                    await OnAnimationChangeRequested?.Invoke("attention");
+                    await Task.Delay(3000, token);
+                    return; // Exit after showing message
+                }
+
+                var action = possibleActions[_random.Next(possibleActions.Count)];
+                var message = (action.ProgramType == SupportedProgram.Notepad)
+                    ? _annoyingMessagesService.GetAllMessages().FirstOrDefault() ?? ""
+                    : _programMessagesService.GetRandomMessageForProgram(action);
+
+                await OnDialogueRequested?.Invoke("¡Je, je! ¿Qué tal un poco de diversión?");
+                await OnAnimationChangeRequested?.Invoke("take_item_intro");
+                await Task.Delay(1500, token);
+
+                token.ThrowIfCancellationRequested();
+
+                await OnAnimationChangeRequested?.Invoke("take_item_loop");
+                await Task.Delay(2000, token);
+
+                token.ThrowIfCancellationRequested();
+                _processService.StartProgram(action, message);
+                await Task.Delay(1000, token);
+            }
+            catch (OperationCanceledException)
+            {
+                /* Task was cancelled, exit gracefully */
+            }
+            finally
+            {
                 await OnDialogueRequested?.Invoke("hide");
                 CurrentState = PetState.Moving;
                 await OnAnimationChangeRequested?.Invoke("moving");
                 _isBusy = false;
-                return;
             }
-
-
-            var action = possibleActions[_random.Next(possibleActions.Count)];
-
-            if (action.ProgramType == SupportedProgram.Unknown)
-            {
-                action.ProgramType = ProgramDetector.DetectProgramType(action.ProgramPath);
-            }
-
-            string message;
-            if (action.ProgramType == SupportedProgram.Notepad)
-            {
-                var allMessages = _annoyingMessagesService.GetAllMessages();
-                message = allMessages[_random.Next(allMessages.Count)];
-            }
-            else
-            {
-                message = _programMessagesService.GetRandomMessageForProgram(action);
-            }
-
-            await OnDialogueRequested?.Invoke("¡Je, je! ¿Qué tal un poco de diversión?");
-            await OnAnimationChangeRequested?.Invoke("take_item_intro");
-            await Task.Delay(1500);
-
-            if (CurrentState == PetState.TakingItem)
-            {
-                await OnAnimationChangeRequested?.Invoke("take_item_loop");
-                await Task.Delay(2000);
-
-                _processService.StartProgram(action, message);
-
-                await Task.Delay(1000);
-            }
-
-            await OnDialogueRequested?.Invoke("hide");
-            CurrentState = PetState.Moving;
-            await OnAnimationChangeRequested?.Invoke("moving");
-            _isBusy = false;
         }
 
-        private async Task OpenAnnoyingUrlAsync()
+        private async Task OpenAnnoyingUrlAsync(CancellationToken token)
         {
             var settings = _settingsService.LoadSettings();
-            if (settings.AnnoyingUrls == null || settings.AnnoyingUrls.Count == 0) return;
-
-            if (OnConfirmationRequested == null) return;
+            if (settings.AnnoyingUrls == null || !settings.AnnoyingUrls.Any() || OnConfirmationRequested == null) return;
 
             _isBusy = true;
             CurrentState = PetState.DemandingAttention;
             await OnAnimationChangeRequested?.Invoke("attention");
-
-            var manipulativeMessages = new[] { "¿Puedo...?", "¿Y si hacemos una travesura?", "¡Mira esto! ¿Te atreves?", "Confía en mí, te va a gustar..." };
-            var message = manipulativeMessages[_random.Next(manipulativeMessages.Length)];
-
-            var userAgreed = await OnConfirmationRequested.Invoke("Una preguntita...", message);
-
-            if (userAgreed)
+            try
             {
-                var annoyingMessages = new[] { "Cagaste", "UN TROYANO CORRAN", "¡AQUÍ VIENE!", "¡AQUÍ VIENE EL CAOS!" };
-                await OnDialogueRequested?.Invoke(annoyingMessages[_random.Next(annoyingMessages.Length)]);
-                var url = settings.AnnoyingUrls[_random.Next(settings.AnnoyingUrls.Count)];
-                _processService.OpenUrl(url);
-                await Task.Delay(2000);
-            }
-            else
-            {
-                var complaints = new[] { "¡Qué aburrido!", "Jo, con lo divertido que era...", "Otro día será, supongo.", "Más fome que que clase de Duoc UC", "¡No me hagas esto!", "¡Pero si era una broma!" };
-                await OnDialogueRequested?.Invoke(complaints[_random.Next(complaints.Length)]);
-                await Task.Delay(3000);
-            }
+                var manipulativeMessages = new[] { "¿Puedo...?", "¿Y si hacemos una travesura?", "¡Mira esto! ¿Te atreves?", "Confía en mí, te va a gustar..." };
+                var message = manipulativeMessages[_random.Next(manipulativeMessages.Length)];
 
-            await OnDialogueRequested?.Invoke("hide");
-            CurrentState = PetState.Moving;
-            await OnAnimationChangeRequested?.Invoke("moving");
-            _isBusy = false;
+                var userAgreed = await OnConfirmationRequested.Invoke("Una preguntita...", message);
+
+                token.ThrowIfCancellationRequested();
+
+                if (userAgreed)
+                {
+                    var annoyingMessages = new[] { "Cagaste", "UN TROYANO CORRAN", "¡AQUÍ VIENE!", "¡AQUÍ VIENE EL CAOS!" };
+                    await OnDialogueRequested?.Invoke(annoyingMessages[_random.Next(annoyingMessages.Length)]);
+                    var url = settings.AnnoyingUrls[_random.Next(settings.AnnoyingUrls.Count)];
+                    _processService.OpenUrl(url);
+                    await Task.Delay(2000, token);
+                }
+                else
+                {
+                    var complaints = new[] { "¡Qué aburrido!", "Jo, con lo divertido que era...", "Otro día será, supongo.", "Más fome que clase de Duoc UC" };
+                    await OnDialogueRequested?.Invoke(complaints[_random.Next(complaints.Length)]);
+                    await Task.Delay(3000, token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                /* Task was cancelled, exit gracefully */
+            }
+            finally
+            {
+                await OnDialogueRequested?.Invoke("hide");
+                CurrentState = PetState.Moving;
+                await OnAnimationChangeRequested?.Invoke("moving");
+                _isBusy = false;
+            }
         }
 
-
-        private async Task FollowMouse()
+        private async Task FollowMouse(CancellationToken token)
         {
             _isBusy = true;
             CurrentState = PetState.FollowingMouse;
             await OnAnimationChangeRequested?.Invoke("moving");
-
-            var followDuration = 4000;
-            var followStopwatch = Stopwatch.StartNew();
-
-            while (followStopwatch.ElapsedMilliseconds < followDuration)
+            try
             {
-                OnFollowMouseRequested?.Invoke();
-                await Task.Delay(30);
+                var followDuration = 4000;
+                var followStopwatch = Stopwatch.StartNew();
+                while (followStopwatch.ElapsedMilliseconds < followDuration)
+                {
+                    token.ThrowIfCancellationRequested();
+                    OnFollowMouseRequested?.Invoke();
+                    await Task.Delay(30, token);
+                }
             }
-
-            CurrentState = PetState.Moving;
-            _isBusy = false;
+            catch (OperationCanceledException)
+            {
+                /* Task was cancelled, exit gracefully */
+            }
+            finally
+            {
+                CurrentState = PetState.Moving;
+                _isBusy = false;
+            }
         }
 
         public async Task TriggerSpecificAnimation(string animationName)
         {
             if (_isBusy) return;
-
             _isBusy = true;
-
 
             var previousState = CurrentState;
             CurrentState = PetState.SillyDance;
-
             await OnAnimationChangeRequested?.Invoke(animationName);
-
-            await Task.Delay(3000);
-
+            await Task.Delay(3000); // This is a user-triggered action, so we let it finish
             CurrentState = previousState;
             await OnAnimationChangeRequested?.Invoke("moving");
+
             _isBusy = false;
         }
-
 
         private async Task MoveRandomly()
         {
             CurrentState = PetState.Moving;
             await OnAnimationChangeRequested?.Invoke("moving");
-
             OnMoveRequested?.Invoke();
         }
 
-        private async Task DemandAttention()
+        private async Task DemandAttention(CancellationToken token)
         {
             _isBusy = true;
             CurrentState = PetState.DemandingAttention;
             await OnAnimationChangeRequested?.Invoke("attention");
-
-            await Task.Delay(2500);
-
-            CurrentState = PetState.Moving;
-            await OnAnimationChangeRequested?.Invoke("moving");
-            _isBusy = false;
+            try
+            {
+                await Task.Delay(2500, token);
+            }
+            catch (OperationCanceledException)
+            {
+                /* Task was cancelled, exit gracefully */
+            }
+            finally
+            {
+                CurrentState = PetState.Moving;
+                await OnAnimationChangeRequested?.Invoke("moving");
+                _isBusy = false;
+            }
         }
 
-        private async Task Speak()
+        private async Task Speak(CancellationToken token)
         {
             _isBusy = true;
             CurrentState = PetState.Speaking;
-
             await OnAnimationChangeRequested?.Invoke("interacting");
             await OnDialogueRequested?.Invoke("show");
-
-            await Task.Delay(5000);
-
-            await OnAnimationChangeRequested?.Invoke("moving");
-            await OnDialogueRequested?.Invoke("hide");
-
-            CurrentState = PetState.Moving;
-            _isBusy = false;
+            try
+            {
+                await Task.Delay(5000, token);
+            }
+            catch (OperationCanceledException)
+            {
+                /* Task was cancelled, exit gracefully */
+            }
+            finally
+            {
+                await OnAnimationChangeRequested?.Invoke("moving");
+                await OnDialogueRequested?.Invoke("hide");
+                CurrentState = PetState.Moving;
+                _isBusy = false;
+            }
         }
     }
 }

@@ -9,6 +9,7 @@
         Dragging,
         FollowingMouse,
         SillyDance,
-        TakingItem
+        TakingItem,
+        PatPat
     }
 }

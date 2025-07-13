@@ -13,19 +13,24 @@
         CanResize="False"
         ShowInTaskbar="False"
         SizeToContent="WidthAndHeight">
-
     <Panel Width="350" Margin="10">
 
         <Image VerticalAlignment="Bottom" HorizontalAlignment="Left"
                Width="200" Height="200"
                Source="{Binding PetSprite}"
-               Stretch="Uniform"/>
+               Stretch="Uniform">
+            <Image.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Pat Pat" Command="{Binding PatPatCommand}" />
+                </ContextMenu>
+            </Image.ContextMenu>
+        </Image>
 
         <views:DialogueBubble
             VerticalAlignment="Top" HorizontalAlignment="Right"
             Margin="0,0,0,0"
             IsVisible="{Binding IsDialogueVisible}"
-            Text="{Binding DialogueText}"/>
+            Text="{Binding DialogueText}" />
 
     </Panel>
 </Window>

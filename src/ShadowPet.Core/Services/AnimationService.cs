@@ -1,5 +1,4 @@
 ﻿using ShadowPet.Core.Models;
-
 namespace ShadowPet.Core.Services;
 
 public class AnimationService
@@ -17,7 +16,8 @@ public class AnimationService
             new("interacting", "/Assets/Interacción.png", 23, 1500, true),
             new("dragging", "/Assets/Ratón.png", 20, 1800, true),
             new("take_item_intro", "/Assets/Tomar_Cosas.png", 18, 1500, false),
-            new("take_item_loop", "/Assets/TomarCosas_Movimiento.png", 11, 1000, true)
+            new("take_item_loop", "/Assets/TomarCosas_Movimiento.png", 11, 1000, true),
+            new("patpat", "/Assets/Acariciar_Shadow.png", 8, 1500, false)
 
         }.ToDictionary(anim => anim.Name);
     }

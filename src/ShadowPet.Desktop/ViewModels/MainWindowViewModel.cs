@@ -61,6 +61,7 @@ namespace ShadowPet.Desktop.ViewModels
         public ICommand OpenSettingsCommand { get; }
         public ICommand QuitCommand { get; }
         public ICommand CheckForUpdatesCommand { get; }
+        public ICommand PatPatCommand { get; }
 
         public MainWindowViewModel(AnimationService animationService, PetBehaviorService behaviorService, DialogueService dialogueService, AudioService audioService, ILogger<MainWindowViewModel> logger, UpdateService updateService)
         {
@@ -81,6 +82,7 @@ namespace ShadowPet.Desktop.ViewModels
             _behaviorService.OnConfirmationRequested += ShowConfirmationDialogAsync;
 
             DoTrickCommand = new RelayCommand(() => _behaviorService.TriggerSpecificAnimation("victoria_face"));
+            PatPatCommand = new RelayCommand(async () => await _behaviorService.TriggerPatPat());
             OpenSettingsCommand = new RelayCommand(OpenSettings);
             QuitCommand = new RelayCommand(QuitApplication);
             CheckForUpdatesCommand = new RelayCommand(async () => await _updateService.CheckForUpdates());

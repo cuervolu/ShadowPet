@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Rendering;
 using ShadowPet.Desktop.ViewModels;
-
 namespace ShadowPet.Desktop.Views
 {
     public partial class MainWindow : Window
@@ -12,9 +11,9 @@ namespace ShadowPet.Desktop.Views
             InitializeComponent();
 
             PointerPressed += OnPointerPressed;
-
             PointerReleased += OnPointerReleased;
             PointerMoved += OnPointerMoved;
+
             DataContextChanged += (sender, args) =>
             {
                 if (DataContext is MainWindowViewModel vm)
@@ -29,12 +28,15 @@ namespace ShadowPet.Desktop.Views
 
         private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (DataContext is MainWindowViewModel vm)
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {
-                vm.UpdatePosition(this.Position);
-                vm.StartDragging();
+                if (DataContext is MainWindowViewModel vm)
+                {
+                    vm.UpdatePosition(this.Position);
+                    vm.StartDragging();
+                }
+                BeginMoveDrag(e);
             }
-            BeginMoveDrag(e);
         }
 
         private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
