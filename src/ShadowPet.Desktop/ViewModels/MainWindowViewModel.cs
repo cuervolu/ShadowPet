@@ -91,10 +91,26 @@ namespace ShadowPet.Desktop.ViewModels
             SetAnimation("moving");
             _behaviorService.Start();
             _moveTimer.Start();
-            _updateCheckTimer = new DispatcherTimer(TimeSpan.FromHours(2), DispatcherPriority.Background, async (s, e) => await _updateService.CheckForUpdates());
+            _updateCheckTimer = new DispatcherTimer(TimeSpan.FromHours(2), DispatcherPriority.Background, (s, e) => _ = CheckForUpdatesAsync());
             _updateCheckTimer.Start();
 
+            _ = CheckForUpdatesAsync();
+
             // ShowFakeUpdateModalForTesting();
+        }
+
+
+        private async Task CheckForUpdatesAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Buscando actualizaciones...");
+                await _updateService.CheckForUpdates();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error crítico durante la comprobación de actualizaciones desde el ViewModel");
+            }
         }
 
 
