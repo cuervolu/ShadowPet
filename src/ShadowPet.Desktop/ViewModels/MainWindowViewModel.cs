@@ -184,17 +184,23 @@ namespace ShadowPet.Desktop.ViewModels
 
                 var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
 
-                var owner = lifetime?.Windows.OfType<MainWindow>().FirstOrDefault(w => w.IsActive);
+                var owner = lifetime?.Windows.OfType<MainWindow>().FirstOrDefault() ?? lifetime?.MainWindow;
+                if (owner is null)
+                {
+                    _logger.LogError("No se pudo encontrar una ventana dueña para mostrar el diálogo de actualización. Abortando");
+                    return;
+                }
+
                 var result = await updateView.ShowDialog<bool?>(owner);
 
                 if (result == true)
                 {
-                    _logger.LogInformation("Usuario acepto la actualizacion. Descargando...");
+                    _logger.LogInformation("Usuario aceptó la actualización. Descargando...");
                     _ = _updateService.DownloadAndApplyUpdates(updateInfo);
                 }
                 else
                 {
-                    _logger.LogInformation("Usuario omitio la actualizacion v{Version}", updateInfo.TargetFullRelease.Version);
+                    _logger.LogInformation("Usuario omitió la actualización v{Version}", updateInfo.TargetFullRelease.Version);
                 }
             });
         }
