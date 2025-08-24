@@ -109,7 +109,13 @@ namespace ShadowPet.Core.Services
                 "https://www.youtube.com/watch?v=swnVdhCsYBk",
                 "https://youtu.be/iL4EeSCQDFk?si=T_YGIKclhLa4EJax",
                 "https://youtu.be/9hUzb2Fsz6k?si=W3iWYHjw-V5JWAvb",
-                "https://youtube.com/shorts/Wnt0_QN1PFE?si=FFpx2OPiNJiFf0ma"
+                "https://youtube.com/shorts/Wnt0_QN1PFE?si=FFpx2OPiNJiFf0ma",
+                "https://youtube.com/shorts/SoOoWJzE7HI?si=AsR4jhNM1Lbp5neR",
+                "https://youtube.com/shorts/qtT1hfJFSCQ?si=vctcmNu80Fp8FaYW",
+                "https://youtube.com/shorts/E7cRXyCYHSs?si=jYlWK3FnH4RXq8pf",
+                "https://youtube.com/shorts/37tISM8ZG6I?si=MBdFo_toXS0VglEq",
+                "https://youtube.com/shorts/HxSU5Ih1BHg?si=tEZjisxRUMTOkN5f",
+                "https://youtube.com/shorts/-ED0uVygv70?si=9tnsz3cNN7wEjRLQ"
             };
         }
 
