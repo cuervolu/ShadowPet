@@ -85,7 +85,7 @@ namespace ShadowPet.Core.Services
                 "https://youtu.be/MxbBgi6qorA?si=lXuGznxGIJZbHKNF",
                 "https://youtu.be/03br1abjjJw?si=U92V5L-5yLAouu5j",
                 "https://www.youtube.com/watch?v=cLCFTQDygS8",
-                "https://www.youtube.com/watch?v=TjpQsYeTnPw",
+                // "https://www.youtube.com/watch?v=TjpQsYeTnPw", Cerro su cuenta xd
                 "https://www.youtube.com/watch?v=vOLwTy7J5jY",
                 "https://www.youtube.com/watch?v=Q9sK-g82KuE",
                 "https://youtube.com/shorts/ZAVbtqWAAds?si=5xldlFMy-sZ1RKKy",
@@ -106,7 +106,10 @@ namespace ShadowPet.Core.Services
                 "https://youtu.be/AKmyTCLaXrw?si=3fwEcWY9YRBrdd51",
                 "https://youtu.be/-wv46hX_gsE?si=QhgF6lYLV__SXrXU",
                 "https://www.youtube.com/watch?v=iDLmYZ5HqgM",
-                "https://www.youtube.com/watch?v=swnVdhCsYBk"
+                "https://www.youtube.com/watch?v=swnVdhCsYBk",
+                "https://youtu.be/iL4EeSCQDFk?si=T_YGIKclhLa4EJax",
+                "https://youtu.be/9hUzb2Fsz6k?si=W3iWYHjw-V5JWAvb",
+                "https://youtube.com/shorts/Wnt0_QN1PFE?si=FFpx2OPiNJiFf0ma"
             };
         }
 
