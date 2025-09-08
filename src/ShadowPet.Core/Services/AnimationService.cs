@@ -17,7 +17,9 @@ public class AnimationService
             new("dragging", "/Assets/Ratón.png", 20, 1800, true),
             new("take_item_intro", "/Assets/Tomar_Cosas.png", 18, 1500, false),
             new("take_item_loop", "/Assets/TomarCosas_Movimiento.png", 11, 1000, true),
-            new("patpat", "/Assets/Acariciar_Shadow.png", 8, 1500, false)
+            new("patpat", "/Assets/Acariciar_Shadow.png", 8, 1500, false),
+            new("vaquita_jumping", "/Assets/Shadow_vaquita_saltando.png", 4, 800, true),
+            new("vaquita", "/Assets/Shadow_vaquita.png", 16, 1500, true)
 
         }.ToDictionary(anim => anim.Name);
     }

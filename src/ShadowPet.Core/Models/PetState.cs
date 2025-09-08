@@ -10,6 +10,7 @@
         FollowingMouse,
         SillyDance,
         TakingItem,
-        PatPat
+        PatPat,
+        VaquitaDance
     }
 }

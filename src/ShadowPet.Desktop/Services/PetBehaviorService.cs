@@ -124,11 +124,16 @@ namespace ShadowPet.Desktop.Services
         private async Task MakeSillyDance(CancellationToken token)
         {
             _isBusy = true;
-            CurrentState = PetState.SillyDance;
-            await OnAnimationChangeRequested?.Invoke("victoria_face");
+
+            var sillyAnimations = new[] { "victoria_face", "vaquita_jumping", "vaquita" };
+            var chosenAnimation = sillyAnimations[_random.Next(sillyAnimations.Length)];
+
+            CurrentState = chosenAnimation.Contains("vaquita") ? PetState.VaquitaDance : PetState.SillyDance;
+
+            await OnAnimationChangeRequested?.Invoke(chosenAnimation);
             try
             {
-                await Task.Delay(3000, token);
+                await Task.Delay(4000, token);
             }
             catch (OperationCanceledException)
             {
