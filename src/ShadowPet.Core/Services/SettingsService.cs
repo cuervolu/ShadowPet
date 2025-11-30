@@ -44,10 +44,7 @@ namespace ShadowPet.Core.Services
         private void SyncDefaultLists(AppSettings settings)
         {
             var defaultUrls = GetDefaultUrls();
-            if (settings.AnnoyingUrls == null)
-            {
-                settings.AnnoyingUrls = new List<string>();
-            }
+            settings.AnnoyingUrls ??= new List<string>();
             var existingUrls = new HashSet<string>(settings.AnnoyingUrls, StringComparer.OrdinalIgnoreCase);
             foreach (var url in defaultUrls)
             {
@@ -73,10 +70,10 @@ namespace ShadowPet.Core.Services
             }
         }
 
-        private List<string> GetDefaultUrls()
+        private static List<string> GetDefaultUrls()
         {
-            return new List<string>
-            {
+            return
+            [
                 "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
                 "https://youtu.be/pzjeSdsXVm4?si=N8RnohE0xUzvxqNK", // >:D
                 "https://youtu.be/BQQJ1ikGpYY?si=PqGjgRpo4gxjuW1v",
@@ -114,15 +111,18 @@ namespace ShadowPet.Core.Services
                 "https://youtube.com/shorts/qtT1hfJFSCQ?si=vctcmNu80Fp8FaYW",
                 "https://youtube.com/shorts/E7cRXyCYHSs?si=jYlWK3FnH4RXq8pf",
                 "https://youtube.com/shorts/37tISM8ZG6I?si=MBdFo_toXS0VglEq",
-                "https://youtube.com/shorts/HxSU5Ih1BHg?si=tEZjisxRUMTOkN5f",
                 "https://youtube.com/shorts/-ED0uVygv70?si=9tnsz3cNN7wEjRLQ",
                 "https://www.youtube.com/watch?v=XOmW7gm25_8",
-                "https://www.youtube.com/watch?v=bxTPb63Efx8",
                 "https://www.youtube.com/watch?v=bq4anYNRuyo",
                 "https://www.youtube.com/shorts/QI4eYCo8VtI",
                 "https://www.youtube.com/watch?v=__s-7F7M0Vs",
-                "https://www.youtube.com/shorts/Id1ehgSgfWI"
-            };
+                "https://www.youtube.com/shorts/Id1ehgSgfWI",
+                "http://eelslap.com/",
+                "https://youtu.be/Kht01NZJkwo?si=pACj4KyDyliczlbf",
+                "https://youtu.be/3YY1GvJpk6Q?si=R_GN2ir48Jq8oPy8",
+                "https://youtu.be/y0dVySY0-c0?si=28UhIvqXkhMB5yZw",
+                "https://youtu.be/ryENHQ3mpLc?si=Q-ltSoN-qV4coJXw"
+            ];
         }
 
         private List<string> GetDefaultDialogues()
